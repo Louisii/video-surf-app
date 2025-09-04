@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:video_surf_app/widget/custom_appbar_widget.dart';
+import 'package:video_surf_app/widget/custom_drawer_widget.dart';
 
 class InitialScreen extends StatelessWidget {
   const InitialScreen({super.key});
@@ -6,6 +8,8 @@ class InitialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: CustomDrawerWidget(),
+      appBar: CustomAppbarWidget(),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
