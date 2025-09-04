@@ -96,9 +96,9 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                       itemBuilder: (context, index) {
                         final surfista = surfistasCsv[index];
                         return Card(
-                          color: Colors.teal.shade50,
+                          color: Colors.white,
                           child: Padding(
-                            padding: const EdgeInsets.all(12.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -109,23 +109,74 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                                   Icons.surfing,
                                   color: Colors.teal.shade800,
                                 ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        surfista.nome,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                              color: Colors.teal.shade800,
+                                            ),
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("CPF: ${surfista.cpf}"),
+                                          Text(
+                                            "Data de nascimento: ${surfista.dataNascimentoFormatada}",
+                                          ),
+                                          Text("Base: ${surfista.base.name}"),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 8,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      surfista.nome,
+                                      "${surfista.videos.length} videos",
                                       style: Theme.of(context)
                                           .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                            color: Colors.teal.shade800,
+                                          .bodyMedium!
+                                          .copyWith(color: Colors.grey),
+                                    ),
+                                    SizedBox(
+                                      width: 180,
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: Colors.teal.shade800,
+                                          side: const BorderSide(
+                                            color: Colors.black26,
+                                          ), // opcional: borda
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
                                           ),
+                                        ),
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.add_circle),
+                                        label: const Text("Adicionar vídeo"),
+                                      ),
                                     ),
-                                    Text("CPF: ${surfista.cpf}"),
-                                    Text(
-                                      "Data de nascimento: ${surfista.dataNascimentoFormatada}",
+                                    SizedBox(
+                                      width: 180,
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          Icons.video_collection,
+                                        ),
+                                        label: const Text("Galeria"),
+                                      ),
                                     ),
-                                    Text("Base: ${surfista.base.name}"),
                                   ],
                                 ),
                               ],

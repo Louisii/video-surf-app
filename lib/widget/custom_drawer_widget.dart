@@ -42,28 +42,40 @@ class CustomDrawerWidget extends StatelessWidget {
                 ),
               );
             },
-            leading: const Icon(Icons.surfing),
+            leading: Icon(
+              Icons.surfing,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text("Surfistas"),
           ),
           ListTile(
             onTap: () {
               Navigator.pop(context);
             },
-            leading: const Icon(Icons.beach_access),
+            leading: Icon(
+              Icons.beach_access,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text("Picos"),
           ),
           ListTile(
             onTap: () {
               Navigator.pop(context);
             },
-            leading: const Icon(Icons.bookmarks_rounded),
+            leading: Icon(
+              Icons.bookmarks_rounded,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text("Indicadores"),
           ),
           ListTile(
             onTap: () {
               Navigator.pop(context);
             },
-            leading: const Icon(Icons.video_library),
+            leading: Icon(
+              Icons.video_library,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text("Vídeos"),
           ),
         ],
