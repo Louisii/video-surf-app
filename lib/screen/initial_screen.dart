@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_surf_app/widget/add_videos_widget.dart';
 
 class InitialScreen extends StatelessWidget {
   const InitialScreen({super.key});
@@ -22,7 +21,6 @@ class InitialScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  AddVideosWidget(),
                 ],
               ),
             ),
