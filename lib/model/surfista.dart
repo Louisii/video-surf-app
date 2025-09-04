@@ -18,6 +18,13 @@ class Surfista {
     this.videos = const [],
   });
 
+  String get dataNascimentoFormatada {
+    final day = dataNascimento.day.toString().padLeft(2, '0');
+    final month = dataNascimento.month.toString().padLeft(2, '0');
+    final year = dataNascimento.year.toString();
+    return '$day/$month/$year';
+  }
+
   Map<String, dynamic> toMap() {
     return {
       SurfistaFields.surfistaId: surfistaId,
