@@ -1,3 +1,5 @@
+import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
+
 enum BaseSurfista { regular, goofy }
 
 extension BaseSurfistaExt on BaseSurfista {
@@ -11,16 +13,14 @@ extension BaseSurfistaExt on BaseSurfista {
     }
   }
 
-  /// Converte string do banco para enum (aceita maiúsculas/minúsculas)
   static BaseSurfista fromDb(String value) {
-    final normalized = value.trim().toLowerCase();
-    switch (normalized) {
+    switch (value.toLowerCase()) {
       case 'regular':
         return BaseSurfista.regular;
       case 'goofy':
         return BaseSurfista.goofy;
       default:
-        return BaseSurfista.regular; // fallback seguro
+        throw SurfistaCsvException('BaseSurfista inválida: $value');
     }
   }
 }

@@ -25,70 +25,71 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
   }
 
   Future<void> _importCsv() async {
-  final result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: ['csv'],
-  );
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
 
-  if (result != null && result.files.single.path != null) {
-    final file = File(result.files.single.path!);
-    final content = await file.readAsString();
-    final rows = const CsvToListConverter().convert(content, eol: '\n');
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      final content = await file.readAsString();
+      final rows = const CsvToListConverter().convert(content, eol: '\n');
 
-    // Pula o cabeçalho
-    final dataRows = rows.skip(1);
+      // Pula o cabeçalho
+      final dataRows = rows.skip(1);
 
-    final List<Surfista> surfistas = [];
-    final List<String> erros = [];
+      final List<Surfista> surfistas = [];
+      final List<String> erros = [];
 
-    for (var i = 0; i < dataRows.length; i++) {
-      final row = dataRows.elementAt(i);
+      for (var i = 0; i < dataRows.length; i++) {
+        final row = dataRows.elementAt(i);
 
-      try {
-        final surfista =
-            Surfista.fromCSV(row.map((e) => e.toString()).toList());
+        try {
+          final surfista = Surfista.fromCSV(
+            row.map((e) => e.toString()).toList(),
+          );
 
-        // Verifica se o CPF já existe
-        final existente = await surfistaDao.getByCpf(surfista.cpf);
-        if (existente != null) {
-          erros.add("Linha ${i + 2}: CPF ${surfista.cpf} já cadastrado.");
-          continue; // pula a inserção
+          // Verifica se o CPF já existe
+          final existente = await surfistaDao.getByCpf(surfista.cpf);
+          if (existente != null) {
+            erros.add("Linha ${i + 2}: CPF ${surfista.cpf} já cadastrado.");
+            continue; // pula a inserção
+          }
+
+          final id = await surfistaDao.create(surfista);
+          surfistas.add(surfista.copyWith(surfistaId: id));
+        } catch (e) {
+          erros.add("Linha ${i + 2}: $e");
         }
+      }
 
-        final id = await surfistaDao.create(surfista);
-        surfistas.add(surfista.copyWith(surfistaId: id));
-      } catch (e) {
-        erros.add("Linha ${i + 2}: $e");
+      setState(() {
+        surfistasCsv = surfistas;
+      });
+
+      if (mounted) {
+        final total = surfistas.length;
+        final titulo = erros.isEmpty ? 'Sucesso' : 'Importação com erros';
+        final mensagem = erros.isEmpty
+            ? "CSV importado com sucesso: $total surfistas."
+            : "Importados: $total surfistas.\n\nErros:\n${erros.join('\n')}";
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(titulo),
+            content: SingleChildScrollView(child: Text(mensagem)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Fechar'),
+              ),
+            ],
+          ),
+        );
       }
     }
-
-    setState(() {
-      surfistasCsv = surfistas;
-    });
-
-    if (mounted) {
-      final total = surfistas.length;
-      final titulo = erros.isEmpty ? 'Sucesso' : 'Importação com erros';
-      final mensagem = erros.isEmpty
-          ? "CSV importado com sucesso: $total surfistas."
-          : "Importados: $total surfistas.\n\nErros:\n${erros.join('\n')}";
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(titulo),
-          content: SingleChildScrollView(child: Text(mensagem)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Fechar'),
-            ),
-          ],
-        ),
-      );
-    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

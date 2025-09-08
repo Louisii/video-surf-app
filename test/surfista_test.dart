@@ -69,13 +69,17 @@ void main() {
       );
     });
 
-    test('Deve lançar SurfistaCsvException para base inválida', () {
-      final csvLine = ['12345678900', 'Nome', '2000-01-01', 'alien'];
-      expect(
-        () => Surfista.fromCSV(csvLine),
-        throwsA(isA<SurfistaCsvException>()),
-      );
-    });
+   test('Deve lançar SurfistaCsvException para base inválida', () {
+  final csvLine = ['12345678900', 'Nome', '2000-01-01', 'alien'];
+
+  expect(
+    () {
+      Surfista.fromCSV(csvLine); 
+    },
+    throwsA(isA<SurfistaCsvException>()),
+  );
+});
+
 
     test('Deve lançar SurfistaCsvException para colunas insuficientes', () {
       final csvLine = ['12345678900', 'Nome'];

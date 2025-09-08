@@ -74,9 +74,9 @@ class Surfista {
 
     BaseSurfista base;
     try {
-      base = BaseSurfistaExt.fromDb(baseStr); 
+      base = BaseSurfistaExt.fromDb(baseStr);
     } catch (_) {
-      throw SurfistaCsvException("BaseSurfista inválida: $baseStr");
+      throw SurfistaCsvException('BaseSurfista inválida: $baseStr');
     }
 
     return Surfista(
