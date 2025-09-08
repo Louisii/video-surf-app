@@ -15,13 +15,18 @@ class SurfistarScreen extends StatefulWidget {
 }
 
 class _SurfistarScreenState extends State<SurfistarScreen> {
-  List<Surfista> surfistasCsv = [];
   late SurfistaDao surfistaDao;
+  late Future<List<Surfista>> surfistasFuture;
 
   @override
   void initState() {
     super.initState();
     surfistaDao = SurfistaDao();
+    _loadSurfistas();
+  }
+
+  void _loadSurfistas() {
+    surfistasFuture = surfistaDao.getAll();
   }
 
   Future<void> _importCsv() async {
@@ -34,16 +39,12 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
       final file = File(result.files.single.path!);
       final content = await file.readAsString();
       final rows = const CsvToListConverter().convert(content, eol: '\n');
-
-      // Pula o cabeçalho
       final dataRows = rows.skip(1);
 
-      final List<Surfista> surfistas = [];
       final List<String> erros = [];
 
       for (var i = 0; i < dataRows.length; i++) {
         final row = dataRows.elementAt(i);
-
         try {
           final surfista = Surfista.fromCSV(
             row.map((e) => e.toString()).toList(),
@@ -53,26 +54,25 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
           final existente = await surfistaDao.getByCpf(surfista.cpf);
           if (existente != null) {
             erros.add("Linha ${i + 2}: CPF ${surfista.cpf} já cadastrado.");
-            continue; // pula a inserção
+            continue;
           }
 
-          final id = await surfistaDao.create(surfista);
-          surfistas.add(surfista.copyWith(surfistaId: id));
+          await surfistaDao.create(surfista);
         } catch (e) {
           erros.add("Linha ${i + 2}: $e");
         }
       }
 
+      // Atualiza o Future para recarregar os surfistas
       setState(() {
-        surfistasCsv = surfistas;
+        _loadSurfistas();
       });
 
       if (mounted) {
-        final total = surfistas.length;
         final titulo = erros.isEmpty ? 'Sucesso' : 'Importação com erros';
         final mensagem = erros.isEmpty
-            ? "CSV importado com sucesso: $total surfistas."
-            : "Importados: $total surfistas.\n\nErros:\n${erros.join('\n')}";
+            ? "CSV importado com sucesso."
+            : "Erros:\n${erros.join('\n')}";
 
         showDialog(
           context: context,
@@ -80,9 +80,9 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
             title: Text(titulo),
             content: SingleChildScrollView(child: Text(mensagem)),
             actions: [
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Fechar'),
+                child: const Text('Ok'),
               ),
             ],
           ),
@@ -94,6 +94,7 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       drawer: const CustomDrawerWidget(),
       appBar: const CustomAppbarWidget(),
       body: Padding(
@@ -107,35 +108,69 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: surfistasCsv.isEmpty
-                  ? const Center(child: Text("Nenhum surfista importado"))
-                  : ListView.builder(
-                      itemCount: surfistasCsv.length,
-                      itemBuilder: (context, index) {
-                        final surfista = surfistasCsv[index];
-                        return Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.surfing),
-                            title: Text(surfista.nome),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("CPF: ${surfista.cpf}"),
-                                Text(
-                                  "Data de nascimento: ${surfista.dataNascimentoFormatada}",
-                                ),
-                                Text("Base: ${surfista.base.name}"),
-                              ],
+              child: FutureBuilder<List<Surfista>>(
+                future: surfistasFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Erro ao carregar surfistas: ${snapshot.error}',
+                      ),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text("Nenhum surfista cadastrado"),
+                    );
+                  }
+
+                  final surfistas = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: surfistas.length,
+                    itemBuilder: (context, index) {
+                      final surfista = surfistas[index];
+                      return Card(
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 3,
+                              ),
                             ),
-                            trailing: Text(
-                              "${surfista.videos.length} vídeos",
-                              style: Theme.of(context).textTheme.bodySmall!
-                                  .copyWith(color: Colors.grey),
+                            child: Icon(
+                              Icons.surfing,
+                              size: 30,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
-                        );
-                      },
-                    ),
+                          title: Text(surfista.nome),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("CPF: ${surfista.cpf}"),
+                              Text(
+                                "Data de nascimento: ${surfista.dataNascimentoFormatada}",
+                              ),
+                              Text("Base: ${surfista.base.name}"),
+                            ],
+                          ),
+                          trailing: Text(
+                            "${surfista.videos.length} vídeos",
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall!.copyWith(color: Colors.grey),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

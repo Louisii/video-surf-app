@@ -32,6 +32,9 @@ class Local {
       pico: map[LocalFields.pico] as String,
     );
   }
+
+  //TODO: fromCSV
+  //TODO: copyWith
 }
 
 class LocalFields {
