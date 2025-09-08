@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_surf_app/screen/surfistar_screen.dart';
+import 'package:video_surf_app/screen/surfista_screen.dart';
 
 class CustomDrawerWidget extends StatelessWidget {
   const CustomDrawerWidget({super.key});

@@ -11,15 +11,16 @@ extension BaseSurfistaExt on BaseSurfista {
     }
   }
 
-  /// Converte string do banco para enum
+  /// Converte string do banco para enum (aceita maiúsculas/minúsculas)
   static BaseSurfista fromDb(String value) {
-    switch (value) {
+    final normalized = value.trim().toLowerCase();
+    switch (normalized) {
       case 'regular':
         return BaseSurfista.regular;
       case 'goofy':
         return BaseSurfista.goofy;
       default:
-        return BaseSurfista.regular;
+        return BaseSurfista.regular; // fallback seguro
     }
   }
 }

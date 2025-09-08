@@ -90,7 +90,7 @@ class DB {
     '''
   CREATE TABLE ${SurfistaFields.tableName} (
     ${SurfistaFields.surfistaId} $integerType $primaryKey,
-    ${SurfistaFields.cpf} $textType NOT NULL,
+    ${SurfistaFields.cpf} $textType NOT NULL UNIQUE,
     ${SurfistaFields.nome} $textType NOT NULL,
     ${SurfistaFields.dataNascimento} $textType NOT NULL,
     ${SurfistaFields.base} $textType NOT NULL

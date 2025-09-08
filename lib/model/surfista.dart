@@ -1,3 +1,4 @@
+import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
 import 'package:video_surf_app/model/enum/base_surfista.dart';
 import 'package:video_surf_app/model/video.dart';
 
@@ -46,6 +47,61 @@ class Surfista {
       base: BaseSurfistaExt.fromDb(map[SurfistaFields.base] as String),
       // videos normalmente vem de outra tabela, então inicializamos vazio aqui
       videos: [],
+    );
+  }
+
+  factory Surfista.fromCSV(List<String> row) {
+    if (row.length < 4) {
+      throw SurfistaCsvException("Número de colunas insuficiente no CSV.");
+    }
+
+    final cpf = row[0].trim();
+    final nome = row[1].trim();
+    final dataStr = row[2].trim();
+    final baseStr = row[3].trim();
+
+    if (cpf.isEmpty) throw CampoAusenteException("cpf");
+    if (nome.isEmpty) throw CampoAusenteException("nome");
+    if (dataStr.isEmpty) throw CampoAusenteException("dataNascimento");
+    if (baseStr.isEmpty) throw CampoAusenteException("base");
+
+    DateTime dataNascimento;
+    try {
+      dataNascimento = DateTime.parse(dataStr);
+    } catch (_) {
+      throw DataInvalidaException(dataStr);
+    }
+
+    BaseSurfista base;
+    try {
+      base = BaseSurfistaExt.fromDb(baseStr); 
+    } catch (_) {
+      throw SurfistaCsvException("BaseSurfista inválida: $baseStr");
+    }
+
+    return Surfista(
+      cpf: cpf,
+      nome: nome,
+      dataNascimento: dataNascimento,
+      base: base,
+    );
+  }
+
+  Surfista copyWith({
+    int? surfistaId,
+    String? cpf,
+    String? nome,
+    DateTime? dataNascimento,
+    BaseSurfista? base,
+    List<Video>? videos,
+  }) {
+    return Surfista(
+      surfistaId: surfistaId ?? this.surfistaId,
+      cpf: cpf ?? this.cpf,
+      nome: nome ?? this.nome,
+      dataNascimento: dataNascimento ?? this.dataNascimento,
+      base: base ?? this.base,
+      videos: videos ?? this.videos,
     );
   }
 }
