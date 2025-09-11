@@ -26,6 +26,19 @@ class Surfista {
     return '$day/$month/$year';
   }
 
+  String get idade {
+    final hoje = DateTime.now();
+    int anos = hoje.year - dataNascimento.year;
+
+    // Ajusta se o aniversário ainda não aconteceu neste ano
+    if (hoje.month < dataNascimento.month ||
+        (hoje.month == dataNascimento.month && hoje.day < dataNascimento.day)) {
+      anos--;
+    }
+
+    return '$anos anos';
+  }
+
   Map<String, dynamic> toMap() {
     return {
       SurfistaFields.surfistaId: surfistaId,

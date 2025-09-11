@@ -99,81 +99,209 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
       appBar: const CustomAppbarWidget(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Row(
           children: [
-            ElevatedButton.icon(
-              onPressed: _importCsv,
-              icon: const Icon(Icons.file_upload),
-              label: const Text("Importar CSV de Surfistas"),
-            ),
-            const SizedBox(height: 20),
             Expanded(
-              child: FutureBuilder<List<Surfista>>(
-                future: surfistasFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Erro ao carregar surfistas: ${snapshot.error}',
-                      ),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text("Nenhum surfista cadastrado"),
-                    );
-                  }
+              child: Column(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _importCsv,
+                    icon: const Icon(Icons.file_upload),
+                    label: const Text("Importar CSV de Surfistas"),
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: FutureBuilder<List<Surfista>>(
+                      future: surfistasFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Erro ao carregar surfistas: ${snapshot.error}',
+                            ),
+                          );
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Text("Nenhum surfista cadastrado"),
+                          );
+                        }
 
-                  final surfistas = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: surfistas.length,
-                    itemBuilder: (context, index) {
-                      final surfista = surfistas[index];
-                      return Card(
-                        color: Colors.white,
-                        child: ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 3,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.surfing,
-                              size: 30,
-                              color: Theme.of(context).colorScheme.primary,
+                        final surfistas = snapshot.data!;
+                        return SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Wrap(
+                              spacing: 12, // espaço horizontal
+                              runSpacing: 12, // espaço vertical
+                              children: surfistas.map((surfista) {
+                                return _buildListTileSurfista(
+                                  context,
+                                  surfista,
+                                );
+                              }).toList(),
                             ),
                           ),
-                          title: Text(surfista.nome),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("CPF: ${surfista.cpf}"),
-                              Text(
-                                "Data de nascimento: ${surfista.dataNascimentoFormatada}",
-                              ),
-                              Text("Base: ${surfista.base.name}"),
-                            ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListTileSurfista(BuildContext context, Surfista surfista) {
+    return SizedBox(
+      width: 520,
+      child: Stack(
+        children: [
+          Card(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 3,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.surfing,
+                      size: 30,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        surfista.nome,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("CPF: ${surfista.cpf}"),
+
+                          Text("Idade: ${surfista.idade}"),
+                          Text(
+                            "Data de nascimento: ${surfista.dataNascimentoFormatada}",
                           ),
-                          trailing: Text(
+                          Text("Base: ${surfista.base.name}"),
+
+                          Text(
                             "${surfista.videos.length} vídeos",
                             style: Theme.of(
                               context,
                             ).textTheme.bodySmall!.copyWith(color: Colors.grey),
                           ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: 160,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      spacing: 8,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            PopupMenuButton<String>(
+                              iconColor: Colors.black54,
+                              onSelected: (value) async {
+                                if (value == 'excluir') {
+                                  await surfistaDao.delete(
+                                    surfista.surfistaId!,
+                                  );
+                                  setState(() {
+                                    _loadSurfistas(); // recarrega a lista
+                                  });
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'excluir',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text("Excluir"),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  );
-                },
+                        SizedBox(height: 8),
+                        Column(
+                          spacing: 8,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.library_add),
+                                    label: Text("Novo Vídeo"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.video_library_rounded,
+                                      color: Colors.teal.shade900,
+                                    ),
+                                    label: Text(
+                                      "Galeria",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.teal.shade900,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.teal.shade100, // fundo
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
