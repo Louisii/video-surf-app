@@ -33,8 +33,43 @@ class Local {
     );
   }
 
-  //TODO: fromCSV
-  //TODO: copyWith
+  // Copia um Local alterando os campos opcionais
+  Local copyWith({
+    int? localId,
+    String? pais,
+    String? cidade,
+    String? praia,
+    String? pico,
+  }) {
+    return Local(
+      localId: localId ?? this.localId,
+      pais: pais ?? this.pais,
+      cidade: cidade ?? this.cidade,
+      praia: praia ?? this.praia,
+      pico: pico ?? this.pico,
+    );
+  }
+}
+
+// Extensão separada para CSV
+extension LocalCSV on Local {
+  static Local fromCSV(List<String> row) {
+    if (row.length < 4) {
+      throw Exception('Número de colunas insuficiente no CSV.');
+    }
+
+    final pais = row[0].trim();
+    final cidade = row[1].trim();
+    final praia = row[2].trim();
+    final pico = row[3].trim();
+
+    if (pais.isEmpty) throw Exception('Campo "pais" ausente');
+    if (cidade.isEmpty) throw Exception('Campo "cidade" ausente');
+    if (praia.isEmpty) throw Exception('Campo "praia" ausente');
+    if (pico.isEmpty) throw Exception('Campo "pico" ausente');
+
+    return Local(pais: pais, cidade: cidade, praia: praia, pico: pico);
+  }
 }
 
 class LocalFields {
@@ -46,11 +81,5 @@ class LocalFields {
   static const String praia = 'praia';
   static const String pico = 'pico';
 
-  static const List<String> values = [
-    localId,
-    pais,
-    cidade,
-    praia,
-    pico,
-  ];
+  static const List<String> values = [localId, pais, cidade, praia, pico];
 }

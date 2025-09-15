@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_surf_app/screen/local_screen.dart';
 import 'package:video_surf_app/screen/surfista_screen.dart';
 
 class CustomDrawerWidget extends StatelessWidget {
@@ -50,7 +51,11 @@ class CustomDrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // fecha o drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LocalScreen()),
+              );
             },
             leading: Icon(
               Icons.beach_access,
