@@ -132,7 +132,8 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                           );
                         }
 
-                        final surfistas = snapshot.data!;
+                        final surfistas = snapshot.data!
+                          ..sort((a, b) => a.nome.compareTo(b.nome));
                         return SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),

@@ -104,16 +104,27 @@ class _LocalScreenState extends State<LocalScreen> {
                     child: FutureBuilder<List<Local>>(
                       future: locaisFuture,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         } else if (snapshot.hasError) {
                           return Center(
-                              child: Text('Erro ao carregar locais: ${snapshot.error}'));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const Center(child: Text("Nenhum local cadastrado"));
+                            child: Text(
+                              'Erro ao carregar locais: ${snapshot.error}',
+                            ),
+                          );
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Text("Nenhum local cadastrado"),
+                          );
                         }
 
-                        final locais = snapshot.data!;
+                        final locais = snapshot.data!
+                          ..sort((a, b) => a.praia.compareTo(b.praia));
+
                         return SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -149,32 +160,38 @@ class _LocalScreenState extends State<LocalScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 3,
-                  ),
-                ),
-                child: Icon(
-                  Icons.place,
-                  size: 30,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                spacing: 16,
                 children: [
-                  Text(
-                    "${local.pais} - ${local.cidade}",
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 3,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.tsunami,
+                      size: 30,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
-                  Text("Praia: ${local.praia}"),
-                  Text("Pico: ${local.pico}"),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${local.praia} - ${local.pico}",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+
+                      Text("${local.cidade}, ${local.pais}"),
+                    ],
+                  ),
                 ],
               ),
+
               PopupMenuButton<String>(
                 onSelected: (value) async {
                   if (value == 'excluir') {
