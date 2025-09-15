@@ -49,6 +49,21 @@ class Local {
       pico: pico ?? this.pico,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Local &&
+          runtimeType == other.runtimeType &&
+          localId == other.localId;
+
+  @override
+  int get hashCode => localId.hashCode;
+
+  @override
+  String toString() {
+    return "$praia - $pico";
+  }
 }
 
 // Extensão separada para CSV

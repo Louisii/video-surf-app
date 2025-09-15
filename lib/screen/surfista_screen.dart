@@ -4,8 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/dao/surfista_dao.dart';
+import 'package:video_surf_app/screen/videos_screen.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:video_surf_app/widget/custom_drawer_widget.dart';
+import 'package:video_surf_app/widget/novo_video_dialog.dart';
 
 class SurfistarScreen extends StatefulWidget {
   const SurfistarScreen({super.key});
@@ -208,11 +210,16 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                           ),
                           Text("Base: ${surfista.base.name}"),
 
-                          Text(
-                            "${surfista.videos.length} vídeos",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall!.copyWith(color: Colors.grey),
+                          FutureBuilder(
+                            future: surfista.nVideosDb,
+                            builder: (context, asyncSnapshot) {
+                              int n = asyncSnapshot.data ?? 0;
+                              return Text(
+                                "$n vídeos",
+                                style: Theme.of(context).textTheme.bodySmall!
+                                    .copyWith(color: Colors.grey),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -262,7 +269,19 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      final result = await showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            NovoVideoDialog(surfista: surfista),
+                                      );
+
+                                      if (result == true) {
+                                        setState(() {
+                                          _loadSurfistas();
+                                        });
+                                      }
+                                    },
                                     icon: Icon(Icons.library_add),
                                     label: Text("Novo Vídeo"),
                                   ),
@@ -273,7 +292,15 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              VideosScreen(surfista: surfista),
+                                        ),
+                                      );
+                                    },
                                     icon: Icon(
                                       Icons.video_library_rounded,
                                       color: Colors.teal.shade900,
@@ -281,13 +308,11 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                                     label: Text(
                                       "Galeria",
                                       style: TextStyle(
-                                        fontSize: 16,
                                         color: Colors.teal.shade900,
                                       ),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.teal.shade100, // fundo
+                                      backgroundColor: Colors.teal.shade100,
                                     ),
                                   ),
                                 ),

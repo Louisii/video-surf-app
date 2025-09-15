@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:video_surf_app/model/acao_indicador.dart';
 import 'package:video_surf_app/model/acao_manobra.dart';
+import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
@@ -152,7 +153,7 @@ class DB {
       ${VideoFields.path} $textType NOT NULL,
       atleta_id $integerType NOT NULL,
       ${VideoFields.localId} $integerType NOT NULL,
-      FOREIGN KEY (atleta_id) REFERENCES atleta(atleta_id) ON DELETE CASCADE,
+      FOREIGN KEY (${AtletaFields.atletaId}) REFERENCES atleta(${AtletaFields.atletaId}) ON DELETE CASCADE,
       FOREIGN KEY (${VideoFields.localId}) REFERENCES ${LocalFields.tableName}(${LocalFields.localId}) ON DELETE CASCADE
     );
     ''',

@@ -30,6 +30,16 @@
         "-d",
         "linux"
       ]
+    },
+    {
+      "name": "Flutter Android",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "-d",
+        "android"
+      ]
     }
   ]
 }

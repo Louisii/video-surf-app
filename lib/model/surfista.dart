@@ -1,3 +1,4 @@
+import 'package:video_surf_app/dao/video_dao.dart';
 import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
 import 'package:video_surf_app/model/enum/base_surfista.dart';
 import 'package:video_surf_app/model/video.dart';
@@ -19,6 +20,12 @@ class Surfista extends Atleta {
     super.atletaId,
   });
 
+  Future<int> get nVideosDb async {
+    if (surfistaId == null) return 0;
+    final videoDao = VideoDao();
+    return await videoDao.countBySurfistaId(surfistaId!);
+  }
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -37,6 +44,7 @@ class Surfista extends Atleta {
       dataNascimento: DateTime.parse(
         map[AtletaFields.dataNascimento] as String,
       ),
+      atletaId: map[AtletaFields.atletaId] as int?,
       modalidade: map[AtletaFields.modalidade] as String,
     );
   }

@@ -1,23 +1,28 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 import 'package:video_surf_app/model/acao_manobra.dart';
+import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/surfista.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class Video {
   final int? videoId;
-  final int idSurfista; // FK para Surfista
-  final int idLocal; // FK para Local
+  final int atletaId; // FK para Atleta
+  final int localId; // FK para Local
   final DateTime data;
   final String path;
 
   // Relações opcionais (carregadas em JOIN ou consultas separadas)
   final Surfista? surfista;
-  final Local? local;
+  Local? local;
   final List<AcaoManobra> acoes;
 
   Video({
     this.videoId,
-    required this.idSurfista,
-    required this.idLocal,
+    required this.atletaId,
+    required this.localId,
     required this.data,
     required this.path,
     this.surfista,
@@ -30,8 +35,8 @@ class Video {
       VideoFields.videoId: videoId,
       VideoFields.data: data.toIso8601String(),
       VideoFields.path: path,
-      VideoFields.surfistaId: idSurfista,
-      VideoFields.localId: idLocal,
+      AtletaFields.atletaId: atletaId,
+      VideoFields.localId: localId,
     };
   }
 
@@ -40,13 +45,29 @@ class Video {
       videoId: map[VideoFields.videoId] as int?,
       data: DateTime.parse(map[VideoFields.data] as String),
       path: map[VideoFields.path] as String,
-      idSurfista: map[VideoFields.surfistaId] as int,
-      idLocal: map[VideoFields.localId] as int,
+      atletaId: map[AtletaFields.atletaId] as int,
+      localId: map[VideoFields.localId] as int,
       // surfista, local e acoes podem ser carregados depois
       surfista: null,
       local: null,
       acoes: [],
     );
+  }
+
+  Future<Uint8List?> get videoThumbnail async {
+    try {
+      return await VideoThumbnail.thumbnailData(
+        video: path,
+        imageFormat: ImageFormat.PNG,
+        maxWidth: 128,
+        quality: 75,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print("Erro ao gerar thumbnail: $e");
+      }
+      return null;
+    }
   }
 }
 
@@ -56,8 +77,7 @@ class VideoFields {
   static const String videoId = 'video_id';
   static const String data = 'data';
   static const String path = 'path';
-  static const String surfistaId = 'surfista_id';
   static const String localId = 'local_id';
 
-  static const List<String> values = [videoId, data, path, surfistaId, localId];
+  static const List<String> values = [videoId, data, path, localId];
 }
