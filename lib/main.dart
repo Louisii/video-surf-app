@@ -1,10 +1,16 @@
+
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:video_surf_app/screen/initial_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
+  // if (kDebugMode) {
+  //   await DB.deleteDatabaseFile(); // só apaga no modo debug
+  // }
+
   runApp(const MyApp());
 }
 

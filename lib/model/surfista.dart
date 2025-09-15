@@ -1,50 +1,29 @@
 import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
 import 'package:video_surf_app/model/enum/base_surfista.dart';
 import 'package:video_surf_app/model/video.dart';
+import 'package:video_surf_app/model/atleta.dart';
 
-class Surfista {
+class Surfista extends Atleta {
   final int? surfistaId;
-  final String cpf;
-  final String nome;
-  final DateTime dataNascimento;
   final BaseSurfista base;
   final List<Video> videos;
 
   Surfista({
     this.surfistaId,
-    required this.cpf,
-    required this.nome,
-    required this.dataNascimento,
     required this.base,
     this.videos = const [],
+    required super.cpf,
+    required super.nome,
+    required super.dataNascimento,
+    required super.modalidade,
+    super.atletaId,
   });
 
-  String get dataNascimentoFormatada {
-    final day = dataNascimento.day.toString().padLeft(2, '0');
-    final month = dataNascimento.month.toString().padLeft(2, '0');
-    final year = dataNascimento.year.toString();
-    return '$day/$month/$year';
-  }
-
-  String get idade {
-    final hoje = DateTime.now();
-    int anos = hoje.year - dataNascimento.year;
-
-    // Ajusta se o aniversário ainda não aconteceu neste ano
-    if (hoje.month < dataNascimento.month ||
-        (hoje.month == dataNascimento.month && hoje.day < dataNascimento.day)) {
-      anos--;
-    }
-
-    return '$anos anos';
-  }
-
+  @override
   Map<String, dynamic> toMap() {
     return {
+      ...super.toMap(), // dados da tabela atleta
       SurfistaFields.surfistaId: surfistaId,
-      SurfistaFields.cpf: cpf,
-      SurfistaFields.nome: nome,
-      SurfistaFields.dataNascimento: dataNascimento.toIso8601String(),
       SurfistaFields.base: base.nameDb,
     };
   }
@@ -52,15 +31,18 @@ class Surfista {
   factory Surfista.fromMap(Map<String, dynamic> map) {
     return Surfista(
       surfistaId: map[SurfistaFields.surfistaId] as int?,
-      cpf: map[SurfistaFields.cpf] as String,
-      nome: map[SurfistaFields.nome] as String,
-      dataNascimento: DateTime.parse(
-        map[SurfistaFields.dataNascimento] as String,
-      ),
       base: BaseSurfistaExt.fromDb(map[SurfistaFields.base] as String),
-      // videos normalmente vem de outra tabela, então inicializamos vazio aqui
-      videos: [],
+      cpf: map[AtletaFields.cpf] as String,
+      nome: map[AtletaFields.nome] as String,
+      dataNascimento: DateTime.parse(
+        map[AtletaFields.dataNascimento] as String,
+      ),
+      modalidade: map[AtletaFields.modalidade] as String,
     );
+  }
+
+  Map<String, dynamic> toAtletaMap() {
+    return super.toMap();
   }
 
   factory Surfista.fromCSV(List<String> row) {
@@ -96,25 +78,8 @@ class Surfista {
       cpf: cpf,
       nome: nome,
       dataNascimento: dataNascimento,
+      modalidade: "surf",
       base: base,
-    );
-  }
-
-  Surfista copyWith({
-    int? surfistaId,
-    String? cpf,
-    String? nome,
-    DateTime? dataNascimento,
-    BaseSurfista? base,
-    List<Video>? videos,
-  }) {
-    return Surfista(
-      surfistaId: surfistaId ?? this.surfistaId,
-      cpf: cpf ?? this.cpf,
-      nome: nome ?? this.nome,
-      dataNascimento: dataNascimento ?? this.dataNascimento,
-      base: base ?? this.base,
-      videos: videos ?? this.videos,
     );
   }
 }
@@ -123,16 +88,8 @@ class SurfistaFields {
   static const String tableName = 'surfista';
 
   static const String surfistaId = 'surfista_id';
-  static const String cpf = 'cpf';
-  static const String nome = 'nome';
-  static const String dataNascimento = 'data_nascimento';
+  static const String atletaId = 'atleta_id';
   static const String base = 'base';
 
-  static const List<String> values = [
-    surfistaId,
-    cpf,
-    nome,
-    dataNascimento,
-    base,
-  ];
+  static const List<String> values = [surfistaId, atletaId, base];
 }

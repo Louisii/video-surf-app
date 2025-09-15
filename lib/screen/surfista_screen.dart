@@ -78,7 +78,7 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(titulo),
-            content: SingleChildScrollView(child: Text(mensagem)),
+            content: SingleChildScrollView(child: SelectableText(mensagem)),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
