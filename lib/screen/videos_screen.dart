@@ -6,6 +6,7 @@ import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/dao/video_dao.dart';
 import 'package:intl/intl.dart';
+import 'package:video_surf_app/screen/video_analise_screen.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:video_surf_app/widget/novo_video_dialog.dart';
 
@@ -213,12 +214,23 @@ class _VideosScreenState extends State<VideosScreen> {
                             },
                           ),
                           onTap: () {
-                            // Aqui você pode abrir um player ou detalhar o vídeo
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Abrir vídeo: ${video.path}"),
-                              ),
-                            );
+                            if (video.path.isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      VideoAnaliseScreen(videoPath: video.path),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Caminho do vídeo não disponível",
+                                  ),
+                                ),
+                              );
+                            }
                           },
                         ),
                       );
