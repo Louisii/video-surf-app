@@ -218,8 +218,10 @@ class _VideosScreenState extends State<VideosScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      VideoAnaliseScreen(videoPath: video.path),
+                                  builder: (context) => VideoAnaliseScreen(
+                                    video: video,
+                                    atleta: surfista,
+                                  ),
                                 ),
                               );
                             } else {

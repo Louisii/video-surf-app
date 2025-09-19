@@ -1,4 +1,3 @@
-
 class Atleta {
   final int? atletaId;
   final String cpf;
@@ -19,6 +18,27 @@ class Atleta {
     final month = dataNascimento.month.toString().padLeft(2, '0');
     final year = dataNascimento.year.toString();
     return '$day/$month/$year';
+  }
+
+  String get nomeSnakeCase {
+    String removeAcentos(String str) {
+      const withAccents =
+          'ÀÁÂÃÄÅàáâãäåÇçÈÉÊËèéêëÌÍÎÏìíîïÑñÒÓÔÕÖØòóôõöøÙÚÛÜùúûüÝýÿ';
+      const withoutAccents =
+          'AAAAAAaaaaaaCcEEEEeeeeIIIIiiiiNnOOOOOOooooooUUUUuuuuYyy';
+      for (int i = 0; i < withAccents.length; i++) {
+        str = str.replaceAll(withAccents[i], withoutAccents[i]);
+      }
+      return str;
+    }
+
+    final noAccents = removeAcentos(nome);
+    final snake = noAccents
+        .trim()
+        .replaceAll(RegExp(r'\s+'), '_') // espaços por _
+        .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '') // remove caracteres especiais
+        .toLowerCase();
+    return snake;
   }
 
   String get idade {
@@ -46,7 +66,9 @@ class Atleta {
       atletaId: map[AtletaFields.atletaId] as int?,
       cpf: map[AtletaFields.cpf] as String,
       nome: map[AtletaFields.nome] as String,
-      dataNascimento: DateTime.parse(map[AtletaFields.dataNascimento] as String),
+      dataNascimento: DateTime.parse(
+        map[AtletaFields.dataNascimento] as String,
+      ),
       modalidade: map[AtletaFields.modalidade] as String,
     );
   }
