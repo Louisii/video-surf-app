@@ -133,6 +133,7 @@ class DB {
     CREATE TABLE ${TipoAcaoFields.tableName} (
       ${TipoAcaoFields.tipoAcaoId} $integerType $primaryKey,
       ${TipoAcaoFields.nome} $textType NOT NULL
+      ${TipoAcaoFields.nivel} $textType NOT NULL
     );
     ''',
 
