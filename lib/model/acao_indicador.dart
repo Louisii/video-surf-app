@@ -5,7 +5,7 @@ import 'package:video_surf_app/model/indicador.dart';
 class AcaoIndicador {
   final int? acaoIndicadorId;
   final int idAcaoManobra; // FK para AcaoManobra
-  final int idIndicador;    // FK para Indicador
+  final int idIndicador; // FK para Indicador
   final Classificacao classificacao;
 
   // Relações opcionais
@@ -35,7 +35,9 @@ class AcaoIndicador {
       acaoIndicadorId: map[AcaoIndicadorFields.acaoIndicadorId] as int?,
       idAcaoManobra: map[AcaoIndicadorFields.idAcaoManobra] as int,
       idIndicador: map[AcaoIndicadorFields.idIndicador] as int,
-      classificacao: ClassificacaoExt.fromDb(map[AcaoIndicadorFields.classificacao] as String),
+      classificacao: ClassificacaoExt.fromDb(
+        map[AcaoIndicadorFields.classificacao] as String,
+      ),
       acao: null,
       indicador: null,
     );
@@ -43,17 +45,19 @@ class AcaoIndicador {
 }
 
 class AcaoIndicadorFields {
-  static const String tableName = 'acaopindicador';
+  static const String tableName = 'acaoindicador';
 
   static const String acaoIndicadorId = 'acaoindicador_id';
   static const String idAcaoManobra = 'idAcaoManobra';
   static const String idIndicador = 'idIndicador';
   static const String classificacao = 'classificacao';
+  static const String ladoOnda = 'ladoonda';
 
   static const List<String> values = [
     acaoIndicadorId,
     idAcaoManobra,
     idIndicador,
     classificacao,
+    ladoOnda,
   ];
 }

@@ -1,4 +1,5 @@
 import 'package:video_surf_app/model/acao_indicador.dart';
+import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
@@ -9,6 +10,7 @@ class AcaoManobra {
   final int idTipoAcao; // FK para TipoAcao
   final Side side;
   final int tempoMs;
+  final LadoOnda? ladoOnda;
 
   // Relações opcionais
   final Video? video;
@@ -21,6 +23,7 @@ class AcaoManobra {
     required this.idTipoAcao,
     required this.side,
     required this.tempoMs,
+    this.ladoOnda,
     this.video,
     this.tipoAcao,
     this.indicadores = const [],
@@ -49,6 +52,7 @@ class AcaoManobra {
       AcaoManobraFields.tempoMs: tempoMs,
       AcaoManobraFields.idVideo: idVideo,
       AcaoManobraFields.tipoAcaoId: idTipoAcao,
+      AcaoManobraFields.ladoOnda: ladoOnda?.nameDb,
     };
   }
 
@@ -59,6 +63,7 @@ class AcaoManobra {
       tempoMs: map[AcaoManobraFields.tempoMs] as int,
       idVideo: map[AcaoManobraFields.idVideo] as int,
       idTipoAcao: map[AcaoManobraFields.tipoAcaoId] as int,
+      ladoOnda: map[AcaoIndicadorFields.ladoOnda],
       video: null,
       tipoAcao: null,
       indicadores: [],
@@ -74,6 +79,7 @@ class AcaoManobraFields {
   static const String tempoMs = 'tempo_ms';
   static const String idVideo = 'idVideo';
   static const String tipoAcaoId = 'tipoacao_id';
+  static const String ladoOnda = 'ladoonda';
 
   static const List<String> values = [
     acaoManobraId,
@@ -81,5 +87,6 @@ class AcaoManobraFields {
     tempoMs,
     idVideo,
     tipoAcaoId,
+    ladoOnda,
   ];
 }
