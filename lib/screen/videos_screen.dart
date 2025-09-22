@@ -220,7 +220,7 @@ class _VideosScreenState extends State<VideosScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => VideoAnaliseScreen(
                                     video: video,
-                                    atleta: surfista,
+                                    surfista: surfista,
                                   ),
                                 ),
                               );

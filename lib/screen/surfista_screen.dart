@@ -176,21 +176,7 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 3,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.surfing,
-                      size: 30,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
+                  surfista.iconeSurfista(Theme.of(context).colorScheme.primary),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,

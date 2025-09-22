@@ -3,21 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart' as mkv;
 
-import 'package:video_surf_app/model/atleta.dart';
+import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_surf_app/widget/video_analise/perfil_atleta.dart';
 import 'dart:io'; // <<--- necessário para File, Directory etc.
-import 'package:path_provider/path_provider.dart'; // <<--- necessário
+import 'package:video_surf_app/widget/video_analise/screenshots_widget.dart';
+import 'package:video_surf_app/widget/video_analise/tagging_widget.dart';
+import 'package:video_surf_app/widget/video_analise/tags_registradas_widget.dart'; // <<--- necessário
 
 class VideoAnaliseScreen extends StatefulWidget {
-  final Atleta atleta;
+  final Surfista surfista;
   final Video video;
 
   const VideoAnaliseScreen({
     super.key,
     required this.video,
-    required this.atleta,
+    required this.surfista,
   });
 
   @override
@@ -81,7 +84,7 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
         final now = DateTime.now();
         final dateStr =
             '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-        String baseName = '${widget.atleta.nomeSnakeCase}_$dateStr';
+        String baseName = '${widget.surfista.nomeSnakeCase}_$dateStr';
 
         int counter = 1;
         File file;
@@ -91,10 +94,11 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
         } while (file.existsSync()); // incrementa até achar um nome livre
 
         await file.writeAsBytes(data);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Screenshot salvo em: ${file.path}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Screenshot salvo em: ${file.path}')),
+          );
+        }
       }
     }
   }
@@ -274,53 +278,20 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                     ],
                   ),
                 ),
+                TagsRegistradasWidget(),
               ],
             ),
           ),
-          // Barra lateral com prints
-          // Barra lateral com prints
-          Container(
-            width: 120,
-            color: Colors.grey[850],
-            child: ListView.builder(
-              itemCount: screenshots.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      // Dentro do GestureDetector -> onTap, após abrir o Dialog
-                      showDialog(
-                        context: context,
-                        builder: (_) => Dialog(
-                          backgroundColor: Colors.black87,
-                          insetPadding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InteractiveViewer(
-                                child: Image.memory(
-                                  screenshots[index],
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.memory(
-                        screenshots[index],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          //barra lateral com tags e indicadors
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PerfilAtleta(surfista: widget.surfista),
+              Expanded(child: TaggingWidget(surfista: widget.surfista)),
+            ],
           ),
+          // Barra lateral com prints
+          ScreenshotsWidget(screenshots: screenshots),
         ],
       ),
     );

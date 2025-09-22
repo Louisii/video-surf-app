@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:video_surf_app/dao/video_dao.dart';
 import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
 import 'package:video_surf_app/model/enum/base_surfista.dart';
@@ -19,6 +21,17 @@ class Surfista extends Atleta {
     required super.modalidade,
     super.atletaId,
   });
+
+  Widget iconeSurfista(Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 3),
+      ),
+      child: Icon(Icons.surfing, size: 30, color: color),
+    );
+  }
 
   Future<int> get nVideosDb async {
     if (surfistaId == null) return 0;
