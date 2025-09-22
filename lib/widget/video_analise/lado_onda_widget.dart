@@ -57,7 +57,7 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
                           child: Icon(
                             Icons.tsunami,
                             size: 32,
-                            color: ladoSelecionado == LadoOnda.esquerda
+                            color: ladoSelecionado == LadoOnda.direita
                                 ? Colors.white
                                 : Colors.teal.shade100,
                           ),
