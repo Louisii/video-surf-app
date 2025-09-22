@@ -1,18 +1,18 @@
-import 'package:video_surf_app/model/acao_manobra.dart';
+import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/indicador.dart';
 
-class AcaoIndicador {
+class avaliacaoIndicador {
   final int? acaoIndicadorId;
   final int idAcaoManobra; // FK para AcaoManobra
   final int idIndicador; // FK para Indicador
   final Classificacao classificacao;
 
   // Relações opcionais
-  final AcaoManobra? acao;
+  final AvaliacaoManobra? acao;
   final Indicador? indicador;
 
-  AcaoIndicador({
+  avaliacaoIndicador({
     this.acaoIndicadorId,
     required this.idAcaoManobra,
     required this.idIndicador,
@@ -23,20 +23,20 @@ class AcaoIndicador {
 
   Map<String, dynamic> toMap() {
     return {
-      AcaoIndicadorFields.acaoIndicadorId: acaoIndicadorId,
-      AcaoIndicadorFields.idAcaoManobra: idAcaoManobra,
-      AcaoIndicadorFields.idIndicador: idIndicador,
-      AcaoIndicadorFields.classificacao: classificacao.nameDb,
+      AvaliacaoIndicadorFields.acaoIndicadorId: acaoIndicadorId,
+      AvaliacaoIndicadorFields.idAcaoManobra: idAcaoManobra,
+      AvaliacaoIndicadorFields.idIndicador: idIndicador,
+      AvaliacaoIndicadorFields.classificacao: classificacao.nameDb,
     };
   }
 
-  factory AcaoIndicador.fromMap(Map<String, dynamic> map) {
-    return AcaoIndicador(
-      acaoIndicadorId: map[AcaoIndicadorFields.acaoIndicadorId] as int?,
-      idAcaoManobra: map[AcaoIndicadorFields.idAcaoManobra] as int,
-      idIndicador: map[AcaoIndicadorFields.idIndicador] as int,
+  factory avaliacaoIndicador.fromMap(Map<String, dynamic> map) {
+    return avaliacaoIndicador(
+      acaoIndicadorId: map[AvaliacaoIndicadorFields.acaoIndicadorId] as int?,
+      idAcaoManobra: map[AvaliacaoIndicadorFields.idAcaoManobra] as int,
+      idIndicador: map[AvaliacaoIndicadorFields.idIndicador] as int,
       classificacao: ClassificacaoExt.fromDb(
-        map[AcaoIndicadorFields.classificacao] as String,
+        map[AvaliacaoIndicadorFields.classificacao] as String,
       ),
       acao: null,
       indicador: null,
@@ -44,8 +44,8 @@ class AcaoIndicador {
   }
 }
 
-class AcaoIndicadorFields {
-  static const String tableName = 'acaoindicador';
+class AvaliacaoIndicadorFields {
+  static const String tableName = 'avaliacaoindicador';
 
   static const String acaoIndicadorId = 'acaoindicador_id';
   static const String idAcaoManobra = 'idAcaoManobra';

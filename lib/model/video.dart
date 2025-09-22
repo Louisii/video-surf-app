@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:video_surf_app/model/acao_manobra.dart';
+import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/surfista.dart';
@@ -17,7 +17,7 @@ class Video {
   // Relações opcionais (carregadas em JOIN ou consultas separadas)
   final Surfista? surfista;
   Local? local;
-  final List<AcaoManobra> acoes;
+  final List<AvaliacaoManobra> acoes;
 
   Video({
     this.videoId,

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:video_surf_app/model/acao_indicador.dart';
-import 'package:video_surf_app/model/acao_manobra.dart';
+import 'package:video_surf_app/model/avaliacao_indicador.dart';
+import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/local.dart';
@@ -132,7 +132,7 @@ class DB {
     '''
     CREATE TABLE ${TipoAcaoFields.tableName} (
       ${TipoAcaoFields.tipoAcaoId} $integerType $primaryKey,
-      ${TipoAcaoFields.nome} $textType NOT NULL
+      ${TipoAcaoFields.nome} $textType NOT NULL,
       ${TipoAcaoFields.nivel} $textType NOT NULL
     );
     ''',
@@ -160,29 +160,29 @@ class DB {
     );
     ''',
 
-    // Tabela AcaoManobra
+    // Tabela avaliacaoManobra
     '''
-    CREATE TABLE ${AcaoManobraFields.tableName} (
-      ${AcaoManobraFields.acaoManobraId} $integerType $primaryKey,
-      ${AcaoManobraFields.side} $textType NOT NULL,
-      ${AcaoManobraFields.tempoMs} $integerType NOT NULL,
-      ${AcaoManobraFields.idVideo} $integerType NOT NULL,
-      ${AcaoManobraFields.tipoAcaoId} $integerType NOT NULL,
-      ${AcaoManobraFields.ladoOnda} $textType NOT NULL,
-      FOREIGN KEY (${AcaoManobraFields.idVideo}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,
-      FOREIGN KEY (${AcaoManobraFields.tipoAcaoId}) REFERENCES ${TipoAcaoFields.tableName}(${TipoAcaoFields.tipoAcaoId}) ON DELETE CASCADE
+    CREATE TABLE ${AvaliacaoManobraFields.tableName} (
+      ${AvaliacaoManobraFields.avaliacaoManobraId} $integerType $primaryKey,
+      ${AvaliacaoManobraFields.side} $textType NOT NULL,
+      ${AvaliacaoManobraFields.tempoMs} $integerType NOT NULL,
+      ${AvaliacaoManobraFields.idVideo} $integerType NOT NULL,
+      ${AvaliacaoManobraFields.tipoAcaoId} $integerType NOT NULL,
+      ${AvaliacaoManobraFields.ladoOnda} $textType NOT NULL,
+      FOREIGN KEY (${AvaliacaoManobraFields.idVideo}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,
+      FOREIGN KEY (${AvaliacaoManobraFields.tipoAcaoId}) REFERENCES ${TipoAcaoFields.tableName}(${TipoAcaoFields.tipoAcaoId}) ON DELETE CASCADE
     );
     ''',
 
-    // Tabela AcaoIndicador
+    // Tabela AvaliacaoIndicador
     '''
-    CREATE TABLE ${AcaoIndicadorFields.tableName} (
-      ${AcaoIndicadorFields.acaoIndicadorId} $integerType $primaryKey,
-      ${AcaoIndicadorFields.idAcaoManobra} $integerType NOT NULL,
-      ${AcaoIndicadorFields.idIndicador} $integerType NOT NULL,
-      ${AcaoIndicadorFields.classificacao} $textType NOT NULL,
-      FOREIGN KEY (${AcaoIndicadorFields.idAcaoManobra}) REFERENCES ${AcaoManobraFields.tableName}(${AcaoManobraFields.acaoManobraId}) ON DELETE CASCADE,
-      FOREIGN KEY (${AcaoIndicadorFields.idIndicador}) REFERENCES ${IndicadorFields.tableName}(${IndicadorFields.indicadorId}) ON DELETE CASCADE
+    CREATE TABLE ${AvaliacaoIndicadorFields.tableName} (
+      ${AvaliacaoIndicadorFields.acaoIndicadorId} $integerType $primaryKey,
+      ${AvaliacaoIndicadorFields.idAcaoManobra} $integerType NOT NULL,
+      ${AvaliacaoIndicadorFields.idIndicador} $integerType NOT NULL,
+      ${AvaliacaoIndicadorFields.classificacao} $textType NOT NULL,
+      FOREIGN KEY (${AvaliacaoIndicadorFields.idAcaoManobra}) REFERENCES ${AvaliacaoManobraFields.tableName}(${AvaliacaoManobraFields.avaliacaoManobraId}) ON DELETE CASCADE,
+      FOREIGN KEY (${AvaliacaoIndicadorFields.idIndicador}) REFERENCES ${IndicadorFields.tableName}(${IndicadorFields.indicadorId}) ON DELETE CASCADE
     );
     ''',
   ];

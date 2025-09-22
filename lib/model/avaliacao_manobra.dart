@@ -1,10 +1,11 @@
-import 'package:video_surf_app/model/acao_indicador.dart';
+import 'package:video_surf_app/model/avaliacao_indicador.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
 
-class AcaoManobra {
+class AvaliacaoManobra {
   final int? acaoManobraId;
   final int idVideo; // FK para Video
   final int idTipoAcao; // FK para TipoAcao
@@ -15,9 +16,9 @@ class AcaoManobra {
   // Relações opcionais
   final Video? video;
   final TipoAcao? tipoAcao;
-  final List<AcaoIndicador> indicadores;
+  final List<avaliacaoIndicador> indicadores;
 
-  AcaoManobra({
+  AvaliacaoManobra({
     this.acaoManobraId,
     required this.idVideo,
     required this.idTipoAcao,
@@ -47,23 +48,26 @@ class AcaoManobra {
 
   Map<String, dynamic> toMap() {
     return {
-      AcaoManobraFields.acaoManobraId: acaoManobraId,
-      AcaoManobraFields.side: side.nameDb,
-      AcaoManobraFields.tempoMs: tempoMs,
-      AcaoManobraFields.idVideo: idVideo,
-      AcaoManobraFields.tipoAcaoId: idTipoAcao,
-      AcaoManobraFields.ladoOnda: ladoOnda?.nameDb,
+      AvaliacaoManobraFields.avaliacaoManobraId: acaoManobraId,
+      AvaliacaoManobraFields.side: side.nameDb,
+      AvaliacaoManobraFields.tempoMs: tempoMs,
+      AvaliacaoManobraFields.idVideo: idVideo,
+      AvaliacaoManobraFields.tipoAcaoId: idTipoAcao,
+      AvaliacaoManobraFields.ladoOnda: ladoOnda?.nameDb,
     };
   }
 
-  factory AcaoManobra.fromMap(Map<String, dynamic> map) {
-    return AcaoManobra(
-      acaoManobraId: map[AcaoManobraFields.acaoManobraId] as int?,
-      side: SideExt.fromDb(map[AcaoManobraFields.side] as String),
-      tempoMs: map[AcaoManobraFields.tempoMs] as int,
-      idVideo: map[AcaoManobraFields.idVideo] as int,
-      idTipoAcao: map[AcaoManobraFields.tipoAcaoId] as int,
-      ladoOnda: map[AcaoIndicadorFields.ladoOnda],
+  factory AvaliacaoManobra.fromMap(Map<String, dynamic> map) {
+    return AvaliacaoManobra(
+      acaoManobraId: map[AvaliacaoManobraFields.avaliacaoManobraId] as int?,
+      side: SideExt.fromDb(map[AvaliacaoManobraFields.side] as String),
+      tempoMs: map[AvaliacaoManobraFields.tempoMs] as int,
+      idVideo: map[AvaliacaoManobraFields.idVideo] as int,
+      idTipoAcao: map[AvaliacaoManobraFields.tipoAcaoId] as int,
+      ladoOnda: LadoOndaExt.fromDb(
+        map[AvaliacaoIndicadorFields.ladoOnda] as String,
+      ),
+
       video: null,
       tipoAcao: null,
       indicadores: [],
@@ -71,10 +75,10 @@ class AcaoManobra {
   }
 }
 
-class AcaoManobraFields {
-  static const String tableName = 'acaomanobra';
+class AvaliacaoManobraFields {
+  static const String tableName = 'avaliacao_manobra';
 
-  static const String acaoManobraId = 'acaomanobra_id';
+  static const String avaliacaoManobraId = 'avaliacao_manobra_id';
   static const String side = 'side';
   static const String tempoMs = 'tempo_ms';
   static const String idVideo = 'idVideo';
@@ -82,7 +86,7 @@ class AcaoManobraFields {
   static const String ladoOnda = 'ladoonda';
 
   static const List<String> values = [
-    acaoManobraId,
+    avaliacaoManobraId,
     side,
     tempoMs,
     idVideo,

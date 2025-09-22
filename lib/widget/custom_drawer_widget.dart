@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_surf_app/screen/local_screen.dart';
 import 'package:video_surf_app/screen/surfista_screen.dart';
+import 'package:video_surf_app/screen/tipo_acao_indicador_screen.dart';
 
 class CustomDrawerWidget extends StatelessWidget {
   const CustomDrawerWidget({super.key});
@@ -65,7 +66,13 @@ class CustomDrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // fecha o drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TipoAcaoIndicadorScreen(),
+                ),
+              );
             },
             leading: Icon(
               Icons.bookmarks_rounded,
