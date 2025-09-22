@@ -7,9 +7,9 @@ extension LadoOndaExt on LadoOnda {
   String get nameDb {
     switch (this) {
       case LadoOnda.direita:
-        return 'direita';
+        return 'Direita';
       case LadoOnda.esquerda:
-        return 'esquerda';
+        return 'Esquerda';
     }
   }
 

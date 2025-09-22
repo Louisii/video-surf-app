@@ -69,4 +69,25 @@ class TipoAcaoDao {
       whereArgs: [id],
     );
   }
+
+  Future<List<String>> getDistinctNiveis() async {
+    final db = await DB.instance.database;
+    final result = await db!.rawQuery('''
+      SELECT DISTINCT ${TipoAcaoFields.nivel}
+      FROM ${TipoAcaoFields.tableName}
+      ORDER BY ${TipoAcaoFields.nivel}
+    ''');
+    return result.map((row) => row[TipoAcaoFields.nivel] as String).toList();
+  }
+
+  Future<List<TipoAcao>> getByNivel(String nivel) async {
+    final db = await DB.instance.database;
+    final result = await db!.query(
+      TipoAcaoFields.tableName,
+      columns: TipoAcaoFields.values,
+      where: '${TipoAcaoFields.nivel} = ?',
+      whereArgs: [nivel],
+    );
+    return result.map((map) => TipoAcao.fromMap(map)).toList();
+  }
 }
