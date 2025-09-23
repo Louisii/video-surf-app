@@ -15,9 +15,9 @@ void main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-  // if (kDebugMode) {
-  //   await DB.deleteDatabaseFile(); // só apaga no modo debug
-  // }
+  if (kDebugMode) {
+    await DB.deleteDatabaseFile(); // só apaga no modo debug
+  }
 
   runApp(const MyApp());
 }
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SurfTag',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'SurfTag'),
     );
   }
 }

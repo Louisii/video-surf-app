@@ -20,7 +20,7 @@ extension LadoOndaExt on LadoOnda {
       case 'esquerda':
         return LadoOnda.esquerda;
       default:
-        throw AcaoManobraException('LadoOnda inválida: $value');
+        throw AvaliacaoManobraException('LadoOnda inválida: $value');
     }
   }
 }

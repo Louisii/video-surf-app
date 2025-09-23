@@ -4,6 +4,7 @@ class TipoAcao {
   final int? tipoAcaoId;
   final String nome;
   final String nivel;
+  
 
   /// relação opcional: lista de indicadores dessa ação
   final List<Indicador>? indicadores;

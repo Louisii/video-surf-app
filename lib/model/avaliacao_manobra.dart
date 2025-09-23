@@ -6,7 +6,7 @@ import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
 
 class AvaliacaoManobra {
-  final int? acaoManobraId;
+  final int? avaliacaoManobraId;
   final int idVideo; // FK para Video
   final int idTipoAcao; // FK para TipoAcao
   final Side side;
@@ -16,10 +16,10 @@ class AvaliacaoManobra {
   // Relações opcionais
   final Video? video;
   final TipoAcao? tipoAcao;
-  final List<avaliacaoIndicador> indicadores;
+   List<AvaliacaoIndicador> avaliacaoIndicadores;
 
   AvaliacaoManobra({
-    this.acaoManobraId,
+    this.avaliacaoManobraId,
     required this.idVideo,
     required this.idTipoAcao,
     required this.side,
@@ -27,7 +27,7 @@ class AvaliacaoManobra {
     this.ladoOnda,
     this.video,
     this.tipoAcao,
-    this.indicadores = const [],
+    this.avaliacaoIndicadores = const [],
   });
 
   /// Converte milissegundos em um formato legível (ex: "1m23s", "12s500ms")
@@ -48,7 +48,7 @@ class AvaliacaoManobra {
 
   Map<String, dynamic> toMap() {
     return {
-      AvaliacaoManobraFields.avaliacaoManobraId: acaoManobraId,
+      AvaliacaoManobraFields.avaliacaoManobraId: avaliacaoManobraId,
       AvaliacaoManobraFields.side: side.nameDb,
       AvaliacaoManobraFields.tempoMs: tempoMs,
       AvaliacaoManobraFields.idVideo: idVideo,
@@ -59,7 +59,8 @@ class AvaliacaoManobra {
 
   factory AvaliacaoManobra.fromMap(Map<String, dynamic> map) {
     return AvaliacaoManobra(
-      acaoManobraId: map[AvaliacaoManobraFields.avaliacaoManobraId] as int?,
+      avaliacaoManobraId:
+          map[AvaliacaoManobraFields.avaliacaoManobraId] as int?,
       side: SideExt.fromDb(map[AvaliacaoManobraFields.side] as String),
       tempoMs: map[AvaliacaoManobraFields.tempoMs] as int,
       idVideo: map[AvaliacaoManobraFields.idVideo] as int,
@@ -70,7 +71,7 @@ class AvaliacaoManobra {
 
       video: null,
       tipoAcao: null,
-      indicadores: [],
+      avaliacaoIndicadores: [],
     );
   }
 }

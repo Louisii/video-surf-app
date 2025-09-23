@@ -178,10 +178,10 @@ class DB {
     '''
     CREATE TABLE ${AvaliacaoIndicadorFields.tableName} (
       ${AvaliacaoIndicadorFields.acaoIndicadorId} $integerType $primaryKey,
-      ${AvaliacaoIndicadorFields.idAcaoManobra} $integerType NOT NULL,
+      ${AvaliacaoIndicadorFields.idAvaliacaoManobra} $integerType NOT NULL,
       ${AvaliacaoIndicadorFields.idIndicador} $integerType NOT NULL,
       ${AvaliacaoIndicadorFields.classificacao} $textType NOT NULL,
-      FOREIGN KEY (${AvaliacaoIndicadorFields.idAcaoManobra}) REFERENCES ${AvaliacaoManobraFields.tableName}(${AvaliacaoManobraFields.avaliacaoManobraId}) ON DELETE CASCADE,
+      FOREIGN KEY (${AvaliacaoIndicadorFields.idAvaliacaoManobra}) REFERENCES ${AvaliacaoManobraFields.tableName}(${AvaliacaoManobraFields.avaliacaoManobraId}) ON DELETE CASCADE,
       FOREIGN KEY (${AvaliacaoIndicadorFields.idIndicador}) REFERENCES ${IndicadorFields.tableName}(${IndicadorFields.indicadorId}) ON DELETE CASCADE
     );
     ''',

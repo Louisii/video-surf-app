@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 
 class LadoOndaWidget extends StatefulWidget {
-  const LadoOndaWidget({super.key});
+  final LadoOnda? valorInicial;
+  final ValueChanged<LadoOnda> onSelecionar;
+
+  const LadoOndaWidget({
+    super.key,
+    this.valorInicial,
+    required this.onSelecionar,
+  });
 
   @override
   State<LadoOndaWidget> createState() => _LadoOndaWidgetState();
@@ -13,9 +20,76 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
   LadoOnda? ladoSelecionado;
 
   @override
+  void initState() {
+    super.initState();
+    ladoSelecionado = widget.valorInicial;
+  }
+
+  void _selecionar(LadoOnda lado) {
+    setState(() {
+      ladoSelecionado = lado;
+    });
+    widget.onSelecionar(lado);
+  }
+
+  Widget _buildBotaoLado({
+    required LadoOnda lado,
+    required String label,
+    bool flipIcon = false,
+  }) {
+    final selecionado = ladoSelecionado == lado;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _selecionar(lado),
+        child: Card(
+          color: selecionado
+              ? Colors.teal.shade400
+              : Colors.teal.shade700.withOpacity(0.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: selecionado ? Colors.tealAccent : Colors.transparent,
+              width: 2,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Transform(
+                  alignment: Alignment.center,
+                  transform: flipIcon
+                      ? Matrix4.rotationY(math.pi)
+                      : Matrix4.identity(),
+                  child: Icon(
+                    Icons.tsunami,
+                    size: 32,
+                    color: selecionado ? Colors.white : Colors.teal.shade100,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: selecionado ? Colors.white : Colors.teal.shade100,
+                    fontWeight: selecionado
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 8,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -24,115 +98,16 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
             context,
           ).textTheme.titleMedium!.copyWith(color: Colors.white),
         ),
+        const SizedBox(height: 8),
         Row(
-          spacing: 8,
           children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    ladoSelecionado = LadoOnda.direita;
-                  });
-                },
-                child: Card(
-                  color: ladoSelecionado == LadoOnda.direita
-                      ? Colors.teal.shade400
-                      : Colors.teal.shade700.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: ladoSelecionado == LadoOnda.direita
-                          ? Colors.tealAccent
-                          : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationY(math.pi),
-                          child: Icon(
-                            Icons.tsunami,
-                            size: 32,
-                            color: ladoSelecionado == LadoOnda.direita
-                                ? Colors.white
-                                : Colors.teal.shade100,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Direita",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: ladoSelecionado == LadoOnda.direita
-                                ? Colors.white
-                                : Colors.teal.shade100,
-                            fontWeight: ladoSelecionado == LadoOnda.direita
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            _buildBotaoLado(
+              lado: LadoOnda.direita,
+              label: "Direita",
+              flipIcon: true,
             ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    ladoSelecionado = LadoOnda.esquerda;
-                  });
-                },
-                child: Card(
-                  color: ladoSelecionado == LadoOnda.esquerda
-                      ? Colors.teal.shade400
-                      : Colors.teal.shade700.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: ladoSelecionado == LadoOnda.esquerda
-                          ? Colors.tealAccent
-                          : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        Icon(
-                          Icons.tsunami,
-                          size: 32,
-                          color: ladoSelecionado == LadoOnda.esquerda
-                              ? Colors.white
-                              : Colors.teal.shade100,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Esquerda",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: ladoSelecionado == LadoOnda.esquerda
-                                ? Colors.white
-                                : Colors.teal.shade100,
-                            fontWeight: ladoSelecionado == LadoOnda.esquerda
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(width: 8),
+            _buildBotaoLado(lado: LadoOnda.esquerda, label: "Esquerda"),
           ],
         ),
       ],

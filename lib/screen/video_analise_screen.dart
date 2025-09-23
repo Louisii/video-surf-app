@@ -283,7 +283,7 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                       ],
                     ),
                   ),
-                  TagsRegistradasWidget(),
+                  TagsRegistradasWidget(idVideo: widget.video.videoId!),
                 ],
               ),
             ),
@@ -292,7 +292,13 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 PerfilAtleta(surfista: widget.surfista),
-                Expanded(child: TaggingWidget(surfista: widget.surfista)),
+                Expanded(
+                  child: TaggingWidget(
+                    surfista: widget.surfista,
+                    video: widget.video,
+                    getVideoPosition: () => position,
+                  ),
+                ),
               ],
             ),
             // Barra lateral com prints
