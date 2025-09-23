@@ -114,7 +114,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                     ),
                   ),
                   child: ListTile(
-                    trailing: estrelasClassificacao(c),
+                    trailing: estrelasClassificacao(c, null),
 
                     title: Row(
                       children: [
@@ -145,7 +145,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     );
   }
 
-  Widget estrelasClassificacao(Classificacao c) {
+  Widget estrelasClassificacao(Classificacao c, double? starSize) {
     int count;
     switch (c) {
       case Classificacao.naoRealizado:
@@ -168,7 +168,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
         return Icon(
           index < count ? Icons.star : Icons.star_border,
           color: Colors.tealAccent,
-          size: 24,
+          size: starSize ?? 24,
         );
       }),
     );
@@ -186,7 +186,8 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 324,
+      width: 424,
+      // width: 324,
       decoration: BoxDecoration(
         color: Colors.grey[850],
         border: const Border(left: BorderSide(color: Colors.black87, width: 2)),
@@ -281,13 +282,24 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                           onTap: () =>
                               _abrirClassificacao(i.indicadorId!, i.descricao),
                           child: Card(
-                            color: Colors.grey[700],
+                            color: Colors.grey[800],
+                            elevation: 2,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: classificacao != null
+                                    ? Colors.teal.shade300
+                                    : Colors.transparent, // contorno sutil
+                                width: 1.5,
+                              ),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                               child: Row(
+                                spacing: 8,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -295,19 +307,32 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                                     child: Text(
                                       i.descricao,
                                       maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         color: Colors.white,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
                                   if (classificacao != null)
-                                    Text(
-                                      classificacao.label,
-                                      style: const TextStyle(
-                                        color: Colors.tealAccent,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      spacing: 4,
+                                      children: [
+                                        Text(
+                                          classificacao.label,
+                                          style: TextStyle(
+                                            color: Colors.tealAccent,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        estrelasClassificacao(
+                                          classificacao,
+                                          16,
+                                        ),
+                                      ],
+                                    ), // função que gera as estrelas
                                 ],
                               ),
                             ),

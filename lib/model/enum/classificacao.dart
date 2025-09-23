@@ -43,4 +43,17 @@ extension ClassificacaoExt on Classificacao {
         return 'Perfeito';
     }
   }
+
+  int get stars {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return 1;
+      case Classificacao.imperfeito:
+        return 2;
+      case Classificacao.quasePerfeito:
+        return 3;
+      case Classificacao.perfeito:
+        return 4;
+    }
+  }
 }
