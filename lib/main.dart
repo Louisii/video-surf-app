@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
@@ -9,7 +10,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   MediaKit.ensureInitialized();
-  databaseFactory = databaseFactoryFfi;
+  // Só inicializa o FFI se for desktop
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   // if (kDebugMode) {
   //   await DB.deleteDatabaseFile(); // só apaga no modo debug
   // }

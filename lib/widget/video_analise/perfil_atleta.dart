@@ -21,34 +21,29 @@ class PerfilAtleta extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Card(
-          color: Colors.teal.shade400,
-          // decoration: BoxDecoration(
-          //   color: Theme.of(context).colorScheme.primary,
-          //   border: Border.all(color: Colors.white, width: 2),
-          //   borderRadius: BorderRadius.all(Radius.circular(10)),
-          // ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              spacing: 8,
-              children: [
-                surfista.iconeSurfista(Colors.white),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        surfista.nome,
-                        style: Theme.of(context).textTheme.titleMedium!
-                            .copyWith(color: foregroundColor),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            spacing: 16,
+            children: [
+              // surfista.iconeSurfista(Colors.white),
+              Icon(Icons.surfing, size: 40, color: Colors.white),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      surfista.nome,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: foregroundColor,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text("Base: ${surfista.base.name}", style: textStyle),
-                    ],
-                  ),
+                    ),
+                    Text("Base: ${surfista.base.name}", style: textStyle),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

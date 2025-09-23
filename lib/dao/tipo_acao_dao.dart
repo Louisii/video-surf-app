@@ -1,8 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:video_surf_app/dao/db.dart';
+import 'package:video_surf_app/dao/indicador_dao.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 
 class TipoAcaoDao {
+  final indicadorDao = IndicadorDao();
+
   Future<int> create(TipoAcao tipoAcao) async {
     final db = await DB.instance.database;
     return await db!.insert(
@@ -89,5 +92,16 @@ class TipoAcaoDao {
       whereArgs: [nivel],
     );
     return result.map((map) => TipoAcao.fromMap(map)).toList();
+  }
+
+  Future<TipoAcao?> findWithIndicadores(int id) async {
+    final tipoAcao = await findById(id);
+    if (tipoAcao != null) {
+      final indicadores = await indicadorDao.getByTipoAcao(
+        tipoAcao.tipoAcaoId!,
+      );
+      return tipoAcao.copyWith(indicadores: indicadores);
+    }
+    return null;
   }
 }

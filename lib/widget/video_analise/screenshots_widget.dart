@@ -10,7 +10,7 @@ class ScreenshotsWidget extends StatelessWidget {
     return Container(
       width: 120,
       decoration: BoxDecoration(
-        color: Colors.grey[850],
+        color: Colors.grey[900],
         border: const Border(
           left: BorderSide(
             color: Colors.black87, // cor da borda

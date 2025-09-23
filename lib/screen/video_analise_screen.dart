@@ -105,194 +105,200 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: CustomAppbarWidget(),
-      body: Row(
-        children: [
-          // Parte principal com vídeo e controles
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: mkv.Video(
-                        controller: controller,
-                        controls: mkv.NoVideoControls,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        appBar: CustomAppbarWidget(),
+        body: Row(
+          children: [
+            // Parte principal com vídeo e controles
+            Expanded(
+              flex: 4,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: mkv.Video(
+                          controller: controller,
+                          controls: mkv.NoVideoControls,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  color: Colors.grey[900],
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Column(
-                    children: [
-                      // Barra de progresso
-                      Row(
-                        children: [
-                          Text(
-                            _formatDuration(position),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                  Container(
+                    color: Colors.grey[900],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      children: [
+                        // Barra de progresso
+                        Row(
+                          children: [
+                            Text(
+                              _formatDuration(position),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.blueAccent,
-                              inactiveColor: Colors.grey,
-                              min: 0,
-                              max: duration.inMilliseconds.toDouble(),
-                              value: position.inMilliseconds
-                                  .clamp(0, duration.inMilliseconds.toDouble())
-                                  .toDouble(),
-                              onChanged: (value) {
-                                player.seek(
-                                  Duration(milliseconds: value.toInt()),
-                                );
+                            Expanded(
+                              child: Slider(
+                                activeColor: Colors.blueAccent,
+                                inactiveColor: Colors.grey,
+                                min: 0,
+                                max: duration.inMilliseconds.toDouble(),
+                                value: position.inMilliseconds
+                                    .clamp(
+                                      0,
+                                      duration.inMilliseconds.toDouble(),
+                                    )
+                                    .toDouble(),
+                                onChanged: (value) {
+                                  player.seek(
+                                    Duration(milliseconds: value.toInt()),
+                                  );
+                                },
+                              ),
+                            ),
+                            Text(
+                              _formatDuration(duration),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        // Controles + botão screenshot
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.skip_previous,
+                                color: Colors.white,
+                              ),
+                              tooltip: "Voltar 1 quadro",
+                              onPressed: () {
+                                final target = position - frameStep;
+                                if (target > Duration.zero) {
+                                  player.seek(target);
+                                } else {
+                                  player.seek(Duration.zero);
+                                }
                               },
                             ),
-                          ),
-                          Text(
-                            _formatDuration(duration),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                            IconButton(
+                              icon: const Icon(
+                                Icons.replay_10,
+                                color: Colors.white,
+                              ),
+                              tooltip: "Voltar 10s",
+                              onPressed: () => player.seek(
+                                position - const Duration(seconds: 10),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Controles + botão screenshot
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.skip_previous,
-                              color: Colors.white,
+                            IconButton(
+                              icon: Icon(
+                                isPlaying
+                                    ? Icons.pause_circle
+                                    : Icons.play_circle,
+                                size: 40,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                isPlaying ? player.pause() : player.play();
+                              },
                             ),
-                            tooltip: "Voltar 1 quadro",
-                            onPressed: () {
-                              final target = position - frameStep;
-                              if (target > Duration.zero) {
-                                player.seek(target);
-                              } else {
-                                player.seek(Duration.zero);
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.replay_10,
-                              color: Colors.white,
+                            IconButton(
+                              icon: const Icon(
+                                Icons.forward_10,
+                                color: Colors.white,
+                              ),
+                              tooltip: "Avançar 10s",
+                              onPressed: () => player.seek(
+                                position + const Duration(seconds: 10),
+                              ),
                             ),
-                            tooltip: "Voltar 10s",
-                            onPressed: () => player.seek(
-                              position - const Duration(seconds: 10),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.skip_next,
+                                color: Colors.white,
+                              ),
+                              tooltip: "Avançar 1 quadro",
+                              onPressed: () =>
+                                  player.seek(position + frameStep),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              isPlaying
-                                  ? Icons.pause_circle
-                                  : Icons.play_circle,
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              isPlaying ? player.pause() : player.play();
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.forward_10,
-                              color: Colors.white,
-                            ),
-                            tooltip: "Avançar 10s",
-                            onPressed: () => player.seek(
-                              position + const Duration(seconds: 10),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.skip_next,
-                              color: Colors.white,
-                            ),
-                            tooltip: "Avançar 1 quadro",
-                            onPressed: () => player.seek(position + frameStep),
-                          ),
-                          const SizedBox(width: 20),
-                          PopupMenuButton<double>(
-                            initialValue: currentSpeed,
-                            onSelected: (value) {
-                              setState(() => currentSpeed = value);
-                              player.setRate(value);
-                            },
-                            color: Colors.grey[850],
-                            itemBuilder: (context) {
-                              return speeds.map((speed) {
-                                return PopupMenuItem<double>(
-                                  value: speed,
-                                  child: Text(
-                                    "${speed}x",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: speed == currentSpeed
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
+                            const SizedBox(width: 20),
+                            PopupMenuButton<double>(
+                              initialValue: currentSpeed,
+                              onSelected: (value) {
+                                setState(() => currentSpeed = value);
+                                player.setRate(value);
+                              },
+                              color: Colors.grey[850],
+                              itemBuilder: (context) {
+                                return speeds.map((speed) {
+                                  return PopupMenuItem<double>(
+                                    value: speed,
+                                    child: Text(
+                                      "${speed}x",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: speed == currentSpeed
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
                                     ),
+                                  );
+                                }).toList();
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.speed, color: Colors.white),
+                                  Text(
+                                    "${currentSpeed}x",
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                );
-                              }).toList();
-                            },
-                            child: Row(
-                              children: [
-                                const Icon(Icons.speed, color: Colors.white),
-                                Text(
-                                  "${currentSpeed}x",
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 20),
-                          // Botão para tirar print
-                          IconButton(
-                            icon: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
+                            const SizedBox(width: 20),
+                            // Botão para tirar print
+                            IconButton(
+                              icon: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                              ),
+                              tooltip: "Capturar frame",
+                              onPressed: _takeScreenshot,
                             ),
-                            tooltip: "Capturar frame",
-                            onPressed: _takeScreenshot,
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                TagsRegistradasWidget(),
+                  TagsRegistradasWidget(),
+                ],
+              ),
+            ),
+            //barra lateral com tags e indicadors
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PerfilAtleta(surfista: widget.surfista),
+                Expanded(child: TaggingWidget(surfista: widget.surfista)),
               ],
             ),
-          ),
-          //barra lateral com tags e indicadors
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              PerfilAtleta(surfista: widget.surfista),
-              Expanded(child: TaggingWidget(surfista: widget.surfista)),
-            ],
-          ),
-          // Barra lateral com prints
-          ScreenshotsWidget(screenshots: screenshots),
-        ],
+            // Barra lateral com prints
+            ScreenshotsWidget(screenshots: screenshots),
+          ],
+        ),
       ),
     );
   }
