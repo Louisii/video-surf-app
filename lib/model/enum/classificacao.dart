@@ -1,9 +1,4 @@
-enum Classificacao {
-  naoRealizado,
-  imperfeito,
-  quasePerfeito,
-  perfeito,
-}
+enum Classificacao { naoRealizado, imperfeito, quasePerfeito, perfeito }
 
 extension ClassificacaoExt on Classificacao {
   /// Retorna a string que será armazenada no banco
@@ -33,6 +28,19 @@ extension ClassificacaoExt on Classificacao {
         return Classificacao.perfeito;
       default:
         return Classificacao.naoRealizado; // default seguro
+    }
+  }
+
+  String get label {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return 'Não Realizado';
+      case Classificacao.imperfeito:
+        return 'Imperfeito';
+      case Classificacao.quasePerfeito:
+        return 'Quase Perfeito';
+      case Classificacao.perfeito:
+        return 'Perfeito';
     }
   }
 }

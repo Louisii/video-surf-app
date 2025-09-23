@@ -15,6 +15,7 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -23,8 +24,8 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
             context,
           ).textTheme.titleMedium!.copyWith(color: Colors.white),
         ),
-        const SizedBox(height: 12),
         Row(
+          spacing: 8,
           children: [
             Expanded(
               child: GestureDetector(
@@ -81,7 +82,6 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
             Expanded(
               child: GestureDetector(
                 onTap: () {

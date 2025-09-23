@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_surf_app/dao/tipo_acao_dao.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/widget/video_analise/filtro_por_nivel.dart';
@@ -19,6 +20,9 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   String? nivelSelecionado;
   List<TipoAcao> manobras = [];
   TipoAcao? manobraSelecionada;
+
+  // estado da classificação
+  Map<int, Classificacao?> classificacoes = {}; // indicadorId -> classificação
 
   @override
   void initState() {
@@ -41,7 +45,8 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     final lista = await dao.getByNivel(nivel);
     setState(() {
       manobras = lista;
-      manobraSelecionada = null; // reseta seleção quando troca nível
+      manobraSelecionada = null;
+      classificacoes.clear();
     });
   }
 
@@ -51,6 +56,130 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     final carregada = await dao.findWithIndicadores(manobra.tipoAcaoId!);
     setState(() {
       manobraSelecionada = carregada;
+      classificacoes.clear();
+    });
+  }
+
+  void _abrirClassificacao(int indicadorId, String nomeIndicador) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      backgroundColor: Colors.grey[900],
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[700],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 4),
+              Text(
+                nomeIndicador, // 👈 mostra o indicador
+                style: TextStyle(
+                  color: Colors.tealAccent,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Divider(color: Colors.grey),
+
+              // Opções de classificação
+              ...Classificacao.values.map((c) {
+                final selecionado = classificacoes[indicadorId] == c;
+                return Card(
+                  color: selecionado
+                      ? Colors.greenAccent.withOpacity(0.15)
+                      : Colors.grey[850],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: selecionado
+                          ? Colors.greenAccent
+                          : Colors.transparent,
+                      width: 2,
+                    ),
+                  ),
+                  child: ListTile(
+                    trailing: estrelasClassificacao(c),
+
+                    title: Row(
+                      children: [
+                        Text(
+                          c.label,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: selecionado
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      setState(() {
+                        classificacoes[indicadorId] = c;
+                      });
+                      Navigator.pop(ctx);
+                    },
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget estrelasClassificacao(Classificacao c) {
+    int count;
+    switch (c) {
+      case Classificacao.naoRealizado:
+        count = 1;
+        break;
+      case Classificacao.imperfeito:
+        count = 2;
+        break;
+      case Classificacao.quasePerfeito:
+        count = 3;
+        break;
+      case Classificacao.perfeito:
+        count = 4;
+        break;
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(4, (index) {
+        return Icon(
+          index < count ? Icons.star : Icons.star_border,
+          color: Colors.tealAccent,
+          size: 24,
+        );
+      }),
+    );
+  }
+
+  void salvar() {
+    // TODO: implementar persistência no banco
+    // você já terá: manobraSelecionada, classificacoes[indicadorId] para cada indicador
+    debugPrint("Salvar avaliação da manobra ${manobraSelecionada?.nome}");
+    classificacoes.forEach((id, c) {
+      debugPrint("Indicador $id => ${c?.nameDb}");
     });
   }
 
@@ -65,11 +194,11 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          spacing: 8,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const LadoOndaWidget(),
 
-            const SizedBox(height: 20),
             Text(
               "Manobras",
               style: Theme.of(
@@ -77,7 +206,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               ).textTheme.titleMedium!.copyWith(color: Colors.white),
             ),
 
-            // filtros por nível
             FiltroPorNivel(
               niveis: niveis,
               nivelSelecionado: nivelSelecionado,
@@ -89,8 +217,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               },
             ),
 
-            const SizedBox(height: 8),
-
             // lista de manobras
             Wrap(
               spacing: 8,
@@ -99,7 +225,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                 final selecionado =
                     manobraSelecionada?.tipoAcaoId == m.tipoAcaoId;
                 return GestureDetector(
-                  onTap: () => _selecionarManobra(m), // 👈 carrega indicadores
+                  onTap: () => _selecionarManobra(m),
                   child: Card(
                     color: selecionado
                         ? Colors.teal.shade400
@@ -135,9 +261,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               }).toList(),
             ),
 
-            const SizedBox(height: 16),
-
-            // indicadores da manobra selecionada
             if (manobraSelecionada != null) ...[
               Text(
                 "Indicadores",
@@ -145,30 +268,69 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   context,
                 ).textTheme.titleMedium!.copyWith(color: Colors.white),
               ),
-              const SizedBox(height: 8),
-              (manobraSelecionada!.indicadores != null &&
-                      manobraSelecionada!.indicadores!.isNotEmpty)
-                  ? Wrap(
+
+              if (manobraSelecionada!.indicadores != null &&
+                  manobraSelecionada!.indicadores!.isNotEmpty)
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: manobraSelecionada!.indicadores!.map((i) {
-                        return Card(
-                          color: Colors.grey[700],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              i.descricao,
-                              style: const TextStyle(color: Colors.white),
+                        final classificacao = classificacoes[i.indicadorId];
+                        return GestureDetector(
+                          onTap: () =>
+                              _abrirClassificacao(i.indicadorId!, i.descricao),
+                          child: Card(
+                            color: Colors.grey[700],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      i.descricao,
+                                      maxLines: 3,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  if (classificacao != null)
+                                    Text(
+                                      classificacao.label,
+                                      style: const TextStyle(
+                                        color: Colors.tealAccent,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );
                       }).toList(),
-                    )
-                  : Text(
-                      "Nenhum indicador encontrado",
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
+                  ),
+                )
+              else
+                Text(
+                  "Nenhum indicador encontrado",
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+
+              if (classificacoes.isNotEmpty)
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: salvar,
+                    icon: const Icon(Icons.save),
+                    label: const Text("Salvar Avaliação"),
+                  ),
+                ),
             ],
           ],
         ),
