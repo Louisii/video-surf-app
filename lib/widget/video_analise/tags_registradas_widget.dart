@@ -5,7 +5,7 @@ import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
 
 class TagsRegistradasWidget extends StatefulWidget {
-  final int idVideo; // vídeo que queremos ler
+  final int idVideo;
 
   const TagsRegistradasWidget({super.key, required this.idVideo});
 
@@ -14,7 +14,16 @@ class TagsRegistradasWidget extends StatefulWidget {
 }
 
 class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
-  AvaliacaoManobraDao dao = AvaliacaoManobraDao();
+  late final AvaliacaoManobraDao dao;
+  late Future<List<AvaliacaoManobra>> _futureAvaliacoes;
+
+  @override
+  void initState() {
+    super.initState();
+    dao = AvaliacaoManobraDao();
+    _futureAvaliacoes = dao.findByVideo(widget.idVideo); // inicializa aqui
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +35,7 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: FutureBuilder<List<AvaliacaoManobra>>(
-        future: dao.findByVideo(widget.idVideo),
+        future: _futureAvaliacoes,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -76,7 +85,6 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
                 ),
               ],
               rows: avaliacoes.expand((avaliacao) {
-                // cada avaliacao pode ter vários indicadores
                 final indicadores = avaliacao.avaliacaoIndicadores ?? [];
                 return indicadores.map((i) {
                   return DataRow(
