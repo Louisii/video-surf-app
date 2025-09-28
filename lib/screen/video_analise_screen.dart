@@ -7,6 +7,7 @@ import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_surf_app/widget/video_analise/local_widget.dart';
 import 'package:video_surf_app/widget/video_analise/perfil_atleta.dart';
 import 'dart:io'; // <<--- necessário para File, Directory etc.
 import 'package:video_surf_app/widget/video_analise/screenshots_widget.dart';
@@ -291,7 +292,14 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PerfilAtleta(surfista: widget.surfista),
+                Row(
+                  children: [
+                    PerfilAtleta(surfista: widget.surfista),
+                    if (widget.video.local != null)
+                      PerfilLocal(local: widget.video.local!),
+                  ],
+                ),
+
                 Expanded(
                   child: TaggingWidget(
                     surfista: widget.surfista,

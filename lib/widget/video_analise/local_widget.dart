@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:video_surf_app/model/surfista.dart';
+import 'package:video_surf_app/model/local.dart';
 
-class PerfilAtleta extends StatelessWidget {
-  const PerfilAtleta({super.key, required this.surfista});
-  final Surfista surfista;
+class PerfilLocal extends StatelessWidget {
+  const PerfilLocal({super.key, required this.local});
+  final Local local;
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = TextStyle(color: Colors.white);
     Color foregroundColor = Colors.white;
     return Container(
-      width: 200,
+      width: 220,
       decoration: BoxDecoration(
         // color: Colors.grey[850],
         border: const Border(
@@ -25,19 +25,19 @@ class PerfilAtleta extends StatelessWidget {
           spacing: 16,
           children: [
             // surfista.iconeSurfista(Colors.white),
-            Icon(Icons.surfing, size: 36, color: Colors.white),
+            Icon(Icons.beach_access, size: 36, color: Colors.white),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    surfista.nome,
+                    local.toString(),
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: foregroundColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text("Base: ${surfista.base.name}", style: textStyle),
+                  Text("${local.cidade} - ${local.pais}", style: textStyle),
                 ],
               ),
             ),
