@@ -1,31 +1,28 @@
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
-import 'package:video_surf_app/model/enum/classificacao.dart';
-import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
-import 'package:video_surf_app/model/video.dart';
 
 class AvaliacaoManobra {
   final int? avaliacaoManobraId;
-  final int idVideo; // FK para Video
+  final int ondaId; // FK para Onda
   final int idTipoAcao; // FK para TipoAcao
   final Side side;
   final int tempoMs;
-  final LadoOnda? ladoOnda;
 
   // Relações opcionais
-  final Video? video;
+  final Onda? onda;
   final TipoAcao? tipoAcao;
-   List<AvaliacaoIndicador> avaliacaoIndicadores;
+  List<AvaliacaoIndicador> avaliacaoIndicadores;
 
   AvaliacaoManobra({
     this.avaliacaoManobraId,
-    required this.idVideo,
+    required this.ondaId,
     required this.idTipoAcao,
     required this.side,
     required this.tempoMs,
-    this.ladoOnda,
-    this.video,
+
+    this.onda,
     this.tipoAcao,
     this.avaliacaoIndicadores = const [],
   });
@@ -51,9 +48,9 @@ class AvaliacaoManobra {
       AvaliacaoManobraFields.avaliacaoManobraId: avaliacaoManobraId,
       AvaliacaoManobraFields.side: side.nameDb,
       AvaliacaoManobraFields.tempoMs: tempoMs,
-      AvaliacaoManobraFields.idVideo: idVideo,
+      AvaliacaoManobraFields.idVideo: ondaId,
       AvaliacaoManobraFields.tipoAcaoId: idTipoAcao,
-      AvaliacaoManobraFields.ladoOnda: ladoOnda?.nameDb,
+     
     };
   }
 
@@ -63,13 +60,11 @@ class AvaliacaoManobra {
           map[AvaliacaoManobraFields.avaliacaoManobraId] as int?,
       side: SideExt.fromDb(map[AvaliacaoManobraFields.side] as String),
       tempoMs: map[AvaliacaoManobraFields.tempoMs] as int,
-      idVideo: map[AvaliacaoManobraFields.idVideo] as int,
+      ondaId: map[AvaliacaoManobraFields.idVideo] as int,
       idTipoAcao: map[AvaliacaoManobraFields.tipoAcaoId] as int,
-      ladoOnda: LadoOndaExt.fromDb(
-        map[AvaliacaoIndicadorFields.ladoOnda] as String,
-      ),
+     
 
-      video: null,
+      onda: null,
       tipoAcao: null,
       avaliacaoIndicadores: [],
     );
@@ -84,7 +79,7 @@ class AvaliacaoManobraFields {
   static const String tempoMs = 'tempo_ms';
   static const String idVideo = 'idVideo';
   static const String tipoAcaoId = 'tipoacao_id';
-  static const String ladoOnda = 'ladoonda';
+  static const String ondaId = 'ondaId';
 
   static const List<String> values = [
     avaliacaoManobraId,
@@ -92,6 +87,6 @@ class AvaliacaoManobraFields {
     tempoMs,
     idVideo,
     tipoAcaoId,
-    ladoOnda,
+    ondaId,
   ];
 }

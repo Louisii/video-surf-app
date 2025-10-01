@@ -8,6 +8,7 @@ import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/local.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
@@ -147,7 +148,7 @@ class DB {
     );
     ''',
 
-    // Tabela Video (agora referencia atleta e não mais surfista)
+    // Tabela Video
     '''
     CREATE TABLE ${VideoFields.tableName} (
       ${VideoFields.videoId} $integerType $primaryKey,
@@ -159,6 +160,20 @@ class DB {
       FOREIGN KEY (${VideoFields.localId}) REFERENCES ${LocalFields.tableName}(${LocalFields.localId}) ON DELETE CASCADE
     );
     ''',
+    // Tabela Onda
+    '''
+    CREATE TABLE ${OndaFields.tableName} (
+      ${OndaFields.ondaId} $integerType $primaryKey,
+      ${OndaFields.data} $textType NOT NULL,
+      ${OndaFields.surfistaId} $integerType NOT NULL,
+      ${OndaFields.localId} $integerType NOT NULL,
+      ${OndaFields.videoId} $integerType NOT NULL,
+      ${OndaFields.ladoOnda} $textType NOT NULL,
+      FOREIGN KEY (${OndaFields.surfistaId}) REFERENCES ${SurfistaFields.tableName}(${SurfistaFields.surfistaId}) ON DELETE CASCADE,
+      FOREIGN KEY (${OndaFields.videoId}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,
+      FOREIGN KEY (${OndaFields.localId}) REFERENCES ${LocalFields.tableName}(${LocalFields.localId}) ON DELETE CASCADE
+    );
+    ''',
 
     // Tabela avaliacaoManobra
     '''
@@ -166,10 +181,9 @@ class DB {
       ${AvaliacaoManobraFields.avaliacaoManobraId} $integerType $primaryKey,
       ${AvaliacaoManobraFields.side} $textType NOT NULL,
       ${AvaliacaoManobraFields.tempoMs} $integerType NOT NULL,
-      ${AvaliacaoManobraFields.idVideo} $integerType NOT NULL,
+      ${AvaliacaoManobraFields.ondaId} $integerType NOT NULL,
       ${AvaliacaoManobraFields.tipoAcaoId} $integerType NOT NULL,
-      ${AvaliacaoManobraFields.ladoOnda} $textType NOT NULL,
-      FOREIGN KEY (${AvaliacaoManobraFields.idVideo}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,
+      FOREIGN KEY (${AvaliacaoManobraFields.ondaId}) REFERENCES ${OndaFields.tableName}(${OndaFields.ondaId}) ON DELETE CASCADE,
       FOREIGN KEY (${AvaliacaoManobraFields.tipoAcaoId}) REFERENCES ${TipoAcaoFields.tableName}(${TipoAcaoFields.tipoAcaoId}) ON DELETE CASCADE
     );
     ''',

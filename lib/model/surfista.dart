@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:video_surf_app/dao/video_dao.dart';
 import 'package:video_surf_app/exceptions/surfista_csv_exceptions.dart';
 import 'package:video_surf_app/model/enum/base_surfista.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/model/atleta.dart';
 
@@ -10,11 +11,13 @@ class Surfista extends Atleta {
   final int? surfistaId;
   final BaseSurfista base;
   final List<Video> videos;
+  final List<Onda> ondas;
 
   Surfista({
     this.surfistaId,
     required this.base,
     this.videos = const [],
+    this.ondas = const [],
     required super.cpf,
     required super.nome,
     required super.dataNascimento,
@@ -37,6 +40,13 @@ class Surfista extends Atleta {
     if (surfistaId == null) return 0;
     final videoDao = VideoDao();
     return await videoDao.countBySurfistaId(surfistaId!);
+  }
+
+  Future<int> get nOndasDb async {
+    if (surfistaId == null) return 0;
+    // final videoDao = VideoDao(); TODO
+    // return await videoDao.countBySurfistaId(surfistaId!);
+    return 0;
   }
 
   @override

@@ -1,9 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
-import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/local.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -17,7 +15,7 @@ class Video {
   // Relações opcionais (carregadas em JOIN ou consultas separadas)
   final Surfista? surfista;
   Local? local;
-  final List<AvaliacaoManobra> acoes;
+  final List<Onda> ondas;
 
   Video({
     this.videoId,
@@ -27,7 +25,7 @@ class Video {
     required this.path,
     this.surfista,
     this.local,
-    this.acoes = const [],
+    this.ondas = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -50,7 +48,7 @@ class Video {
       // surfista, local e acoes podem ser carregados depois
       surfista: null,
       local: null,
-      acoes: [],
+      ondas: [],
     );
   }
 
@@ -78,6 +76,7 @@ class VideoFields {
   static const String data = 'data';
   static const String path = 'path';
   static const String localId = 'local_id';
+  static const String ondaId = 'onda_id';
 
   static const List<String> values = [videoId, data, path, localId];
 }
