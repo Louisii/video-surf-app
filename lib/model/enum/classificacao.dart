@@ -1,6 +1,49 @@
+import 'package:flutter/material.dart';
+
 enum Classificacao { naoRealizado, imperfeito, quasePerfeito, perfeito }
 
 extension ClassificacaoExt on Classificacao {
+  String get sigla {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return 'NR';
+      case Classificacao.imperfeito:
+        return 'I';
+      case Classificacao.quasePerfeito:
+        return 'QP';
+      case Classificacao.perfeito:
+        return 'P';
+    }
+  }
+
+  /// Cor de fundo
+  Color get backgroundColor {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return Colors.purple;
+      case Classificacao.imperfeito:
+        return Colors.red;
+      case Classificacao.quasePerfeito:
+        return Colors.yellow.shade700;
+      case Classificacao.perfeito:
+        return Colors.green;
+    }
+  }
+
+  /// Cor da borda quando selecionado
+  Color get borderColor {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return Colors.purpleAccent;
+      case Classificacao.imperfeito:
+        return Colors.redAccent;
+      case Classificacao.quasePerfeito:
+        return Colors.yellowAccent.shade700;
+      case Classificacao.perfeito:
+        return Colors.lightGreenAccent;
+    }
+  }
+
   /// Retorna a string que será armazenada no banco
   String get nameDb {
     switch (this) {

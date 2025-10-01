@@ -284,7 +284,15 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                       ],
                     ),
                   ),
-                  TagsRegistradasWidget(idVideo: widget.video.videoId!),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TagsRegistradasWidget( //pq o player do video esta fazendo essa widget re renderizar
+                          idVideo: widget.video.videoId!,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

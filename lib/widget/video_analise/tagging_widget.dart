@@ -10,6 +10,7 @@ import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
+import 'package:video_surf_app/widget/classificacao/classificacoes_buttons.dart';
 import 'package:video_surf_app/widget/video_analise/filtro_por_nivel.dart';
 import 'package:video_surf_app/widget/video_analise/lado_onda_widget.dart';
 
@@ -210,11 +211,10 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
     // Cria objeto AvaliacaoManobra
     AvaliacaoManobra avaliacaoManobra = AvaliacaoManobra(
-      idVideo: widget.video.videoId!, // passar o id correto do vídeo
+      ondaId: widget.video.videoId!, // passar o id correto do vídeo
       idTipoAcao: manobraSelecionada!.tipoAcaoId!,
       side: side,
       tempoMs: tempoMs,
-      ladoOnda: ladoOnda!,
     );
 
     debugPrint("AvaliacaoManobra criada: $avaliacaoManobra");
@@ -419,6 +419,8 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                     label: const Text("Salvar Avaliação"),
                   ),
                 ),
+
+              ClassificacoesButtons(),
             ],
           ],
         ),
