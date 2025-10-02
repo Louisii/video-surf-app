@@ -287,7 +287,8 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: TagsRegistradasWidget( //pq o player do video esta fazendo essa widget re renderizar
+                        child: TagsRegistradasWidget(
+                          //pq o player do video esta fazendo essa widget re renderizar
                           idVideo: widget.video.videoId!,
                         ),
                       ),
@@ -317,8 +318,8 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                 ),
               ],
             ),
-            // Barra lateral com prints
-            ScreenshotsWidget(screenshots: screenshots),
+            // // Barra lateral com prints
+            // ScreenshotsWidget(screenshots: screenshots),
           ],
         ),
       ),

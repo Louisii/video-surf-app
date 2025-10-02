@@ -7,11 +7,11 @@ import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
+import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/widget/classificacao/classificacoes_buttons.dart';
-import 'package:video_surf_app/widget/video_analise/filtro_por_nivel.dart';
 import 'package:video_surf_app/widget/video_analise/lado_onda_widget.dart';
 
 class TaggingWidget extends StatefulWidget {
@@ -41,6 +41,8 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
   // estado da classificação
   Map<int, Classificacao?> classificacoes = {}; // indicadorId -> classificação
+
+  int? indicadorSelecionadoId;
 
   @override
   void initState() {
@@ -76,91 +78,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       manobraSelecionada = carregada;
       classificacoes.clear();
     });
-  }
-
-  void _abrirClassificacao(int indicadorId, String nomeIndicador) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      backgroundColor: Colors.grey[900],
-      builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[700],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 4),
-              Text(
-                nomeIndicador, // 👈 mostra o indicador
-                style: TextStyle(
-                  color: Colors.tealAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Divider(color: Colors.grey),
-
-              // Opções de classificação
-              ...Classificacao.values.map((c) {
-                final selecionado = classificacoes[indicadorId] == c;
-                return Card(
-                  color: selecionado
-                      ? Colors.greenAccent.withOpacity(0.15)
-                      : Colors.grey[850],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: selecionado
-                          ? Colors.greenAccent
-                          : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                  child: ListTile(
-                    trailing: estrelasClassificacao(c, null),
-
-                    title: Row(
-                      children: [
-                        Text(
-                          c.label,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: selecionado
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      setState(() {
-                        classificacoes[indicadorId] = c;
-                      });
-                      Navigator.pop(ctx);
-                    },
-                  ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Widget estrelasClassificacao(Classificacao c, double? starSize) {
@@ -241,7 +158,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 424,
+      width: 460,
       // width: 324,
       decoration: BoxDecoration(
         color: Colors.grey[850],
@@ -250,16 +167,15 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          spacing: 8,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- lado da onda
             LadoOndaWidget(
               valorInicial: ladoOnda,
               onSelecionar: (lado) {
                 setState(() {
                   ladoOnda = lado;
                 });
-                debugPrint("Onda selecionada: ${lado.name}");
               },
             ),
 
@@ -270,18 +186,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               ).textTheme.titleMedium!.copyWith(color: Colors.white),
             ),
 
-            FiltroPorNivel(
-              niveis: niveis,
-              nivelSelecionado: nivelSelecionado,
-              onSelecionarNivel: (nivel) {
-                setState(() {
-                  nivelSelecionado = nivel;
-                });
-                _loadManobras(nivel);
-              },
-            ),
-
-            // lista de manobras
+            // --- lista de manobras
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -325,7 +230,9 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               }).toList(),
             ),
 
+            // --- indicadores
             if (manobraSelecionada != null) ...[
+              const SizedBox(height: 16),
               Text(
                 "Indicadores",
                 style: Theme.of(
@@ -336,73 +243,67 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               if (manobraSelecionada!.indicadores != null &&
                   manobraSelecionada!.indicadores!.isNotEmpty)
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: manobraSelecionada!.indicadores!.map((i) {
-                        final classificacao = classificacoes[i.indicadorId];
-                        return GestureDetector(
-                          onTap: () =>
-                              _abrirClassificacao(i.indicadorId!, i.descricao),
-                          child: Card(
-                            color: Colors.grey[800],
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: classificacao != null
-                                    ? Colors.teal.shade300
-                                    : Colors.transparent, // contorno sutil
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 10,
-                              ),
-                              child: Row(
-                                spacing: 8,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      i.descricao,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                      ),
+                  child: ListView(
+                    children: manobraSelecionada!.indicadores!.map((i) {
+                      final selecionado =
+                          indicadorSelecionadoId == i.indicadorId;
+                      final classificacao = classificacoes[i.indicadorId];
+
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: selecionado
+                                ? Colors.grey.shade600
+                                : Colors.grey.shade800,
+                            width: 2,
+                          ),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            i.descricao,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: classificacao != null
+                              ? Container(
+                                  width: 45,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: classificacao.backgroundColor,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: classificacao.borderColor,
+                                      width: 2,
                                     ),
                                   ),
-                                  if (classificacao != null)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      spacing: 4,
-                                      children: [
-                                        Text(
-                                          classificacao.label,
-                                          style: TextStyle(
-                                            color: Colors.tealAccent,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        estrelasClassificacao(
-                                          classificacao,
-                                          16,
-                                        ),
-                                      ],
-                                    ), // função que gera as estrelas
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                                  child: Text(
+                                    classificacao.sigla,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                )
+                              : const Text(
+                                  "Sem \nclassificação",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                          onTap: () {
+                            setState(() {
+                              indicadorSelecionadoId = i.indicadorId;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
                   ),
                 )
               else
@@ -410,18 +311,22 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   "Nenhum indicador encontrado",
                   style: TextStyle(color: Colors.grey[500], fontSize: 12),
                 ),
-
-              if (classificacoes.isNotEmpty)
-                Center(
-                  child: ElevatedButton.icon(
-                    onPressed: salvar,
-                    icon: const Icon(Icons.save),
-                    label: const Text("Salvar Avaliação"),
-                  ),
-                ),
-
-              ClassificacoesButtons(),
             ],
+
+            // --- barra inferior de classificação
+            if (indicadorSelecionadoId != null)
+              Container(
+                // color: Colors.black87,
+                padding: const EdgeInsets.all(8),
+                child: ClassificacoesButtons(
+                  selecionado: classificacoes[indicadorSelecionadoId],
+                  onClassificar: (c) {
+                    setState(() {
+                      classificacoes[indicadorSelecionadoId!] = c;
+                    });
+                  },
+                ),
+              ),
           ],
         ),
       ),

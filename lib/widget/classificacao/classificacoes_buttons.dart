@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
-import 'classificacao_button.dart'; // seu ClassificacaoButton
+import 'classificacao_button.dart'; // seu botão estilizado
 
-class ClassificacoesButtons extends StatefulWidget {
-  const ClassificacoesButtons({super.key});
+class ClassificacoesButtons extends StatelessWidget {
+  final Classificacao? selecionado;
+  final ValueChanged<Classificacao> onClassificar;
 
-  @override
-  State<ClassificacoesButtons> createState() => _ClassificacoesButtonsState();
-}
-
-class _ClassificacoesButtonsState extends State<ClassificacoesButtons> {
-  Classificacao? _selecionado;
+  const ClassificacoesButtons({
+    super.key,
+    required this.selecionado,
+    required this.onClassificar,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +18,12 @@ class _ClassificacoesButtonsState extends State<ClassificacoesButtons> {
       spacing: 8,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: Classificacao.values.map((classificacao) {
-        final bool isSelecionado = classificacao == _selecionado;
+        final bool isSelecionado = classificacao == selecionado;
 
         return ClassificacaoButton(
           classificacao: classificacao,
           selected: isSelecionado,
-          onPressed: () {
-            setState(() {
-              _selecionado = classificacao;
-            });
-          },
+          onPressed: () => onClassificar(classificacao),
         );
       }).toList(),
     );

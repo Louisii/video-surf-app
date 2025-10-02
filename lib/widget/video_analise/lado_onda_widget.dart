@@ -39,23 +39,24 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
   }) {
     final selecionado = ladoSelecionado == lado;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _selecionar(lado),
-        child: Card(
-          color: selecionado
-              ? Colors.teal.shade400
-              : Colors.teal.shade700.withOpacity(0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: selecionado ? Colors.tealAccent : Colors.transparent,
-              width: 2,
-            ),
+    return GestureDetector(
+      onTap: () => _selecionar(lado),
+      child: Card(
+        color: selecionado
+            ? Colors.teal.shade400
+            : Colors.teal.shade700.withOpacity(0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: selecionado ? Colors.tealAccent : Colors.transparent,
+            width: 2,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SizedBox(
+            width: 60,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Transform(
