@@ -169,14 +169,15 @@ class DB {
       ${OndaFields.localId} $integerType NOT NULL,
       ${OndaFields.videoId} $integerType NOT NULL,
       ${OndaFields.ladoOnda} $textType NOT NULL,
+      ${OndaFields.terminouCaindo} INTEGER NOT NULL CHECK (${OndaFields.terminouCaindo} IN (0,1)), -- ✅ campo booleano (0 ou 1)
+      
       FOREIGN KEY (${OndaFields.surfistaId}) REFERENCES ${SurfistaFields.tableName}(${SurfistaFields.surfistaId}) ON DELETE CASCADE,
       FOREIGN KEY (${OndaFields.videoId}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,
       FOREIGN KEY (${OndaFields.localId}) REFERENCES ${LocalFields.tableName}(${LocalFields.localId}) ON DELETE CASCADE
     );
-    ''',
-
-    // Tabela avaliacaoManobra
     '''
+        // Tabela avaliacaoManobra
+        '''
     CREATE TABLE ${AvaliacaoManobraFields.tableName} (
       ${AvaliacaoManobraFields.avaliacaoManobraId} $integerType $primaryKey,
       ${AvaliacaoManobraFields.side} $textType NOT NULL,

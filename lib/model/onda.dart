@@ -1,4 +1,3 @@
-
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/local.dart';
@@ -11,6 +10,7 @@ class Onda {
   final int videoId; // FK para Video
   final DateTime data;
   final LadoOnda ladoOnda;
+  final bool terminouCaindo;
 
   // Relações opcionais
   final Surfista? surfista;
@@ -24,6 +24,7 @@ class Onda {
     required this.videoId,
     required this.data,
     required this.ladoOnda,
+    required this.terminouCaindo,
     this.surfista,
     this.local,
     this.acoes = const [],
@@ -37,6 +38,7 @@ class Onda {
       OndaFields.videoId: videoId,
       OndaFields.data: data.toIso8601String(),
       OndaFields.ladoOnda: ladoOnda.nameDb,
+     OndaFields.terminouCaindo: terminouCaindo ? 1 : 0,
     };
   }
 
@@ -48,10 +50,10 @@ class Onda {
       videoId: map[OndaFields.videoId] as int,
       data: DateTime.parse(map[OndaFields.data] as String),
       ladoOnda: LadoOndaExt.fromDb(map[OndaFields.ladoOnda] as String),
+      terminouCaindo: map[OndaFields.terminouCaindo] == 1,
     );
   }
 }
-
 
 class OndaFields {
   static const String tableName = 'onda';
@@ -62,6 +64,7 @@ class OndaFields {
   static const String localId = 'local_id';
   static const String videoId = 'video_id';
   static const String ladoOnda = 'lado_onda';
+  static const String terminouCaindo = 'terminou_caindo';
 
   static const List<String> values = [
     ondaId,
@@ -70,5 +73,6 @@ class OndaFields {
     videoId,
     data,
     ladoOnda,
+    terminouCaindo,
   ];
 }
