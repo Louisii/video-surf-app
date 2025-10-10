@@ -1,4 +1,5 @@
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
@@ -26,6 +27,20 @@ class AvaliacaoManobra {
     this.tipoAcao,
     this.avaliacaoIndicadores = const [],
   });
+
+  double mediaDesempenhoPercent() {
+    double soma = 0.0;
+    int totalIndicadores = 0;
+
+    for (AvaliacaoIndicador indicador in avaliacaoIndicadores) {
+      soma += indicador.classificacao.valor;
+      totalIndicadores++;
+    }
+
+    if (totalIndicadores == 0) return 0.0;
+
+    return (soma / totalIndicadores) * 100; // retorna em %
+  }
 
   /// Converte milissegundos em um formato legível (ex: "1m23s", "12s500ms")
   String getTempoFormatado() {

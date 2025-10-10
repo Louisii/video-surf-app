@@ -16,6 +16,19 @@ extension ClassificacaoExt on Classificacao {
     }
   }
 
+  double get valor {
+    switch (this) {
+      case Classificacao.naoRealizado:
+        return 0;
+      case Classificacao.imperfeito:
+        return 0.25;
+      case Classificacao.quasePerfeito:
+        return 0.5;
+      case Classificacao.perfeito:
+        return 1;
+    }
+  }
+
   /// Cor de fundo
   Color get backgroundColor {
     switch (this) {

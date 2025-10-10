@@ -1,12 +1,12 @@
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
-import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/indicador.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 
 class AvaliacaoIndicador {
   final int? avaliacaoIndicadorId;
   int? idAvaliacaoManobra; // FK para AvaliacaoManobra
   final int idIndicador; // FK para Indicador
-  final Classificacao classificacao;
+  Classificacao classificacao;
 
   // Relações opcionais
   final AvaliacaoManobra? acao;

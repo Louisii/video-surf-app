@@ -1,4 +1,6 @@
+import 'package:video_surf_app/model/avaliacao_indicador.dart';
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/surfista.dart';
@@ -15,7 +17,7 @@ class Onda {
   // Relações opcionais
   final Surfista? surfista;
   Local? local;
-  final List<AvaliacaoManobra> acoes;
+  List<AvaliacaoManobra> manobrasAvaliadas;
 
   Onda({
     this.ondaId,
@@ -27,8 +29,27 @@ class Onda {
     required this.terminouCaindo,
     this.surfista,
     this.local,
-    this.acoes = const [],
+    this.manobrasAvaliadas = const [],
   });
+
+  double mediaDesempenhoPercent() {
+    final manobras = manobrasAvaliadas;
+    if (manobras.isEmpty) return 0.0;
+
+    double soma = 0.0;
+    int totalIndicadores = 0;
+
+    for (var manobra in manobras) {
+      for (AvaliacaoIndicador indicador in manobra.avaliacaoIndicadores) {
+        soma += indicador.classificacao.valor;
+        totalIndicadores++;
+      }
+    }
+
+    if (totalIndicadores == 0) return 0.0;
+
+    return (soma / totalIndicadores) * 100; // retorna em %
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -38,7 +59,7 @@ class Onda {
       OndaFields.videoId: videoId,
       OndaFields.data: data.toIso8601String(),
       OndaFields.ladoOnda: ladoOnda.nameDb,
-     OndaFields.terminouCaindo: terminouCaindo ? 1 : 0,
+      OndaFields.terminouCaindo: terminouCaindo ? 1 : 0,
     };
   }
 

@@ -105,4 +105,17 @@ class TipoAcaoDao {
     }
     return null;
   }
+
+  Future<TipoAcao?> getById(int idTipoAcao) async {
+    final db = await DB.instance.database;
+    final maps = await db!.query(
+      TipoAcaoFields.tableName, // nome da tabela
+      where: '${TipoAcaoFields.tipoAcaoId} = ?',
+      whereArgs: [idTipoAcao],
+    );
+    if (maps.isNotEmpty) {
+      return TipoAcao.fromMap(maps.first);
+    }
+    return null;
+  }
 }
