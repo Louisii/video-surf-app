@@ -61,4 +61,18 @@ class IndicadorDao {
       whereArgs: [id],
     );
   }
+
+  Future<Indicador?> getIndicadorById(int id) async {
+    final db = await DB.instance.database;
+    final maps = await db!.query(
+      IndicadorFields.tableName,
+      where: '${IndicadorFields.indicadorId} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Indicador.fromMap(maps.first);
+    }
+    return null;
+  }
 }
