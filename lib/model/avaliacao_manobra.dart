@@ -48,9 +48,8 @@ class AvaliacaoManobra {
       AvaliacaoManobraFields.avaliacaoManobraId: avaliacaoManobraId,
       AvaliacaoManobraFields.side: side.nameDb,
       AvaliacaoManobraFields.tempoMs: tempoMs,
-      AvaliacaoManobraFields.idVideo: ondaId,
+      AvaliacaoManobraFields.ondaId: ondaId,
       AvaliacaoManobraFields.tipoAcaoId: idTipoAcao,
-     
     };
   }
 
@@ -60,9 +59,8 @@ class AvaliacaoManobra {
           map[AvaliacaoManobraFields.avaliacaoManobraId] as int?,
       side: SideExt.fromDb(map[AvaliacaoManobraFields.side] as String),
       tempoMs: map[AvaliacaoManobraFields.tempoMs] as int,
-      ondaId: map[AvaliacaoManobraFields.idVideo] as int,
+      ondaId: map[AvaliacaoManobraFields.ondaId] as int,
       idTipoAcao: map[AvaliacaoManobraFields.tipoAcaoId] as int,
-     
 
       onda: null,
       tipoAcao: null,

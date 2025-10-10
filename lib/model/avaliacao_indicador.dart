@@ -3,8 +3,8 @@ import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/indicador.dart';
 
 class AvaliacaoIndicador {
-  final int? acaoIndicadorId;
-  final int idAvaliacaoManobra; // FK para AvaliacaoManobra
+  final int? avaliacaoIndicadorId;
+  int? idAvaliacaoManobra; // FK para AvaliacaoManobra
   final int idIndicador; // FK para Indicador
   final Classificacao classificacao;
 
@@ -13,8 +13,8 @@ class AvaliacaoIndicador {
   final Indicador? indicador;
 
   AvaliacaoIndicador({
-    this.acaoIndicadorId,
-    required this.idAvaliacaoManobra,
+    this.avaliacaoIndicadorId,
+    this.idAvaliacaoManobra,
     required this.idIndicador,
     required this.classificacao,
     this.acao,
@@ -23,7 +23,7 @@ class AvaliacaoIndicador {
 
   Map<String, dynamic> toMap() {
     return {
-      AvaliacaoIndicadorFields.acaoIndicadorId: acaoIndicadorId,
+      AvaliacaoIndicadorFields.acaoIndicadorId: avaliacaoIndicadorId,
       AvaliacaoIndicadorFields.idAvaliacaoManobra: idAvaliacaoManobra,
       AvaliacaoIndicadorFields.idIndicador: idIndicador,
       AvaliacaoIndicadorFields.classificacao: classificacao.nameDb,
@@ -32,7 +32,8 @@ class AvaliacaoIndicador {
 
   factory AvaliacaoIndicador.fromMap(Map<String, dynamic> map) {
     return AvaliacaoIndicador(
-      acaoIndicadorId: map[AvaliacaoIndicadorFields.acaoIndicadorId] as int?,
+      avaliacaoIndicadorId:
+          map[AvaliacaoIndicadorFields.acaoIndicadorId] as int?,
       idAvaliacaoManobra:
           map[AvaliacaoIndicadorFields.idAvaliacaoManobra] as int,
       idIndicador: map[AvaliacaoIndicadorFields.idIndicador] as int,

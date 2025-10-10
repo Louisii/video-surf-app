@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:video_surf_app/dao/db.dart';
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
@@ -5,13 +6,20 @@ import 'package:video_surf_app/model/avaliacao_indicador.dart';
 class AvaliacaoIndicadorDao {
   AvaliacaoIndicadorDao();
 
-  Future<int> insert(AvaliacaoIndicador avaliacao) async {
+  Future<int> createIndicadorAvaliado(AvaliacaoIndicador avaliacao) async {
     final db = await DB.instance.database;
-    return await db!.insert(
-      AvaliacaoIndicadorFields.tableName,
-      avaliacao.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      return await db!.insert(
+        AvaliacaoIndicadorFields.tableName,
+        avaliacao.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('Erro ao inserir indicador avaliado: $e');
+      }
+      rethrow; 
+    }
   }
 
   Future<List<AvaliacaoIndicador>> getByAvaliacaoManobraId(

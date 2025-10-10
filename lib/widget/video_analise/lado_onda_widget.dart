@@ -55,7 +55,7 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: SizedBox(
-            width: 60,
+            width: 68,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -70,7 +70,6 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
                     color: selecionado ? Colors.white : Colors.teal.shade100,
                   ),
                 ),
-                const SizedBox(width: 6),
                 Text(
                   label,
                   style: TextStyle(
@@ -91,6 +90,8 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      spacing: 8,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -99,7 +100,6 @@ class _LadoOndaWidgetState extends State<LadoOndaWidget> {
             context,
           ).textTheme.titleMedium!.copyWith(color: Colors.white),
         ),
-        const SizedBox(height: 8),
         Row(
           children: [
             _buildBotaoLado(

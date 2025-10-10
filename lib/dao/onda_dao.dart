@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:video_surf_app/dao/db.dart';
 import 'package:video_surf_app/model/onda.dart';
 
@@ -6,6 +8,22 @@ class OndaDao {
   Future<int> insert(Onda onda) async {
     final db = await DB.instance.database;
     return await db!.insert(OndaFields.tableName, onda.toMap());
+  }
+
+  Future<int> createOnda(Onda onda) async {
+    try {
+      final db = await DB.instance.database;
+      return await db!.insert(
+        OndaFields.tableName,
+        onda.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('Erro ao inserir onda: $e');
+      }
+      rethrow; // repassa o erro para o chamador
+    }
   }
 
   // 🔹 Buscar onda por ID

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:video_surf_app/dao/avaliacao_indicador_dao.dart';
 import 'package:video_surf_app/dao/db.dart';
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
@@ -60,12 +62,33 @@ class AvaliacaoManobraDao {
     return manobras;
   }
 
-  Future<int> insertIndicador(AvaliacaoIndicador indicador) async {
-    final db = await DB.instance.database;
-    return await db!.insert(
-      AvaliacaoIndicadorFields.tableName,
-      indicador.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<int> createManobra(AvaliacaoManobra manobraAvaliada) async {
+    try {
+      final db = await DB.instance.database;
+
+      // Salva manobra
+      int manobraId = await db!.insert(
+        AvaliacaoManobraFields.tableName,
+        manobraAvaliada.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      // Salva indicadores avaliados
+      if (manobraAvaliada.avaliacaoIndicadores.isNotEmpty) {
+        AvaliacaoIndicadorDao avaliacaoIndicadorDao = AvaliacaoIndicadorDao();
+        for (AvaliacaoIndicador indicador
+            in manobraAvaliada.avaliacaoIndicadores) {
+          indicador.idAvaliacaoManobra = manobraId; // garantir FK
+          await avaliacaoIndicadorDao.createIndicadorAvaliado(indicador);
+        }
+      }
+
+      return manobraId;
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('Erro ao inserir manobra avaliado: $e');
+      }
+      rethrow; // repassa o erro para o chamador
+    }
   }
 }

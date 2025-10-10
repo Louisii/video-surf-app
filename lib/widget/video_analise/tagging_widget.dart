@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:video_surf_app/dao/avaliacao_indicador_dao.dart';
 import 'package:video_surf_app/dao/avaliacao_manobra_dao.dart';
+import 'package:video_surf_app/dao/onda_dao.dart';
 import 'package:video_surf_app/dao/tipo_acao_dao.dart';
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
+import 'package:video_surf_app/model/enum/base_surfista.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/indicador.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
@@ -31,13 +34,15 @@ class TaggingWidget extends StatefulWidget {
 }
 
 class _TaggingWidgetState extends State<TaggingWidget> {
-  final dao = TipoAcaoDao();
+  TipoAcaoDao tipoAcaoDao = TipoAcaoDao();
   List<String> niveis = [];
   String? nivelSelecionado;
   List<TipoAcao> manobras = [];
   TipoAcao? manobraSelecionada;
 
   LadoOnda? ladoOnda;
+
+  int? ondaAtualId;
 
   // estado da classificação
   Map<int, Classificacao?> classificacoes = {}; // indicadorId -> classificação
@@ -51,7 +56,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   }
 
   Future<void> _loadNiveis() async {
-    final lista = await dao.getDistinctNiveis();
+    List<String> lista = await tipoAcaoDao.getDistinctNiveis();
     setState(() {
       niveis = lista;
       if (niveis.isNotEmpty) {
@@ -62,7 +67,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   }
 
   Future<void> _loadManobras(String nivel) async {
-    final lista = await dao.getByNivel(nivel);
+    List<TipoAcao> lista = await tipoAcaoDao.getByNivel(nivel);
     setState(() {
       manobras = lista;
       manobraSelecionada = null;
@@ -73,86 +78,83 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   Future<void> _selecionarManobra(TipoAcao manobra) async {
     if (manobra.tipoAcaoId == null) return;
 
-    final carregada = await dao.findWithIndicadores(manobra.tipoAcaoId!);
+    TipoAcao? carregada = await tipoAcaoDao.findWithIndicadores(
+      manobra.tipoAcaoId!,
+    );
     setState(() {
       manobraSelecionada = carregada;
       classificacoes.clear();
     });
   }
 
-  Widget estrelasClassificacao(Classificacao c, double? starSize) {
-    int count;
-    switch (c) {
-      case Classificacao.naoRealizado:
-        count = 1;
-        break;
-      case Classificacao.imperfeito:
-        count = 2;
-        break;
-      case Classificacao.quasePerfeito:
-        count = 3;
-        break;
-      case Classificacao.perfeito:
-        count = 4;
-        break;
+  Future<int?> salvarOnda({required bool terminouCaindo}) async {
+    if (ladoOnda == null) {
+      // TODO: mostrar mensagem ao usuário
+      return null;
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(4, (index) {
-        return Icon(
-          index < count ? Icons.star : Icons.star_border,
-          color: Colors.tealAccent,
-          size: starSize ?? 24,
-        );
-      }),
+    if (widget.surfista.surfistaId == null || widget.video.videoId == null) {
+      return null;
+    }
+
+    Onda onda = Onda(
+      ondaId: ondaAtualId,
+      surfistaId: widget.surfista.surfistaId!,
+      localId: widget.video.localId,
+      videoId: widget.video.videoId!,
+      data: DateTime.now(),
+      ladoOnda: ladoOnda!,
+      terminouCaindo: terminouCaindo,
     );
+
+    if (ondaAtualId != null) {
+      await OndaDao().update(onda);
+      return ondaAtualId;
+    } else {
+      int ondaId = await OndaDao().createOnda(onda);
+      return ondaId;
+    }
   }
 
-  void salvar() async {
-    if (manobraSelecionada == null || ladoOnda == null) {
-      debugPrint("Erro: manobra ou lado da onda não selecionados");
+  clear() {
+    setState(() {
+      manobraSelecionada = null;
+      classificacoes.clear();
+      ladoOnda = null;
+    });
+  }
+
+  Future<void> salvarManobra(int ondaId) async {
+    if (manobraSelecionada == null) return;
+    if (ladoOnda == null) {
+      // TODO: mensagem de erro
       return;
     }
 
-    final tempoMs = widget.getVideoPosition().inMilliseconds;
-    Side side = Side.desconhecido; // valor padrão
-    if (manobraSelecionada != null) {
-      final nome = manobraSelecionada!.nome.toUpperCase();
-      if (nome.contains('BS')) {
-        side = Side.backside;
-      } else if (nome.contains('FS')) {
-        side = Side.frontside;
-      }
-    }
+    List<AvaliacaoIndicador> indicadoresAvaliados =
+        manobraSelecionada!.indicadores?.map((i) {
+          return AvaliacaoIndicador(
+            idIndicador: i.indicadorId!,
+            classificacao:
+                classificacoes[i.indicadorId] ?? Classificacao.naoRealizado,
+          );
+        }).toList() ??
+        [];
 
-    // Cria objeto AvaliacaoManobra
-    AvaliacaoManobra avaliacaoManobra = AvaliacaoManobra(
-      ondaId: widget.video.videoId!, // passar o id correto do vídeo
+    AvaliacaoManobra manobraAvaliada = AvaliacaoManobra(
+      ondaId: ondaId,
       idTipoAcao: manobraSelecionada!.tipoAcaoId!,
-      side: side,
-      tempoMs: tempoMs,
+      side: getSide(),
+      tempoMs: widget.getVideoPosition().inMilliseconds,
+      avaliacaoIndicadores: indicadoresAvaliados,
     );
 
-    debugPrint("AvaliacaoManobra criada: $avaliacaoManobra");
-    final manobraDao = AvaliacaoManobraDao();
-    final indicadorDao = AvaliacaoIndicadorDao();
+    await AvaliacaoManobraDao().createManobra(manobraAvaliada);
 
-    // 1. Salvar AvaliacaoManobra e pegar ID
-    final idAvaliacaoManobra = await manobraDao.insert(avaliacaoManobra);
-    // 2. Salvar cada AvaliacaoIndicador com o ID gerado
-    for (var entry in classificacoes.entries) {
-      final indicadorId = entry.key;
-      final classificacao = entry.value;
-      if (classificacao != null) {
-        final avaliacaoIndicador = AvaliacaoIndicador(
-          idAvaliacaoManobra: idAvaliacaoManobra,
-          idIndicador: indicadorId,
-          classificacao: classificacao,
-        );
-        await indicadorDao.insert(avaliacaoIndicador);
-      }
-    }
+    setState(() {
+      manobraSelecionada = null;
+      classificacoes.clear();
+    });
   }
 
   @override
@@ -164,172 +166,330 @@ class _TaggingWidgetState extends State<TaggingWidget> {
         color: Colors.grey[850],
         border: const Border(left: BorderSide(color: Colors.black87, width: 2)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- lado da onda
-            LadoOndaWidget(
-              valorInicial: ladoOnda,
-              onSelecionar: (lado) {
-                setState(() {
-                  ladoOnda = lado;
-                });
-              },
-            ),
-
-            Text(
-              "Manobras",
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium!.copyWith(color: Colors.white),
-            ),
-
-            // --- lista de manobras
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: manobras.map((m) {
-                final selecionado =
-                    manobraSelecionada?.tipoAcaoId == m.tipoAcaoId;
-                return GestureDetector(
-                  onTap: () => _selecionarManobra(m),
-                  child: Card(
-                    color: selecionado
-                        ? Colors.teal.shade400
-                        : Colors.teal.shade700.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: selecionado
-                            ? Colors.tealAccent
-                            : Colors.transparent,
-                        width: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // --- lado da onda
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      LadoOndaWidget(
+                        valorInicial: ladoOnda,
+                        onSelecionar: (lado) {
+                          setState(() {
+                            ladoOnda = lado;
+                          });
+                        },
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      child: Text(
-                        m.nome,
-                        style: TextStyle(
-                          color: selecionado
-                              ? Colors.white
-                              : Colors.teal.shade100,
-                          fontWeight: selecionado
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-
-            // --- indicadores
-            if (manobraSelecionada != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                "Indicadores",
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium!.copyWith(color: Colors.white),
-              ),
-
-              if (manobraSelecionada!.indicadores != null &&
-                  manobraSelecionada!.indicadores!.isNotEmpty)
-                Expanded(
-                  child: ListView(
-                    children: manobraSelecionada!.indicadores!.map((i) {
-                      final selecionado =
-                          indicadorSelecionadoId == i.indicadorId;
-                      final classificacao = classificacoes[i.indicadorId];
-
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: selecionado
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade800,
-                            width: 2,
+                      //aqui os botoes com niveis para filtrar as manobras
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        spacing: 8,
+                        children: [
+                          Text(
+                            "Nível",
+                            style: Theme.of(context).textTheme.titleMedium!
+                                .copyWith(color: Colors.white),
                           ),
-                        ),
-                        child: ListTile(
-                          title: Text(
-                            i.descricao,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          trailing: classificacao != null
-                              ? Container(
-                                  width: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: classificacao.backgroundColor,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: classificacao.borderColor,
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: niveis.map((n) {
+                              final selecionado = nivelSelecionado == n;
+                              return ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    nivelSelecionado = n;
+                                  });
+                                  _loadManobras(n);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: selecionado
+                                      ? Colors.teal.shade400
+                                      : Colors.teal.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color: selecionado
+                                          ? Colors.tealAccent
+                                          : Colors.transparent,
                                       width: 2,
                                     ),
                                   ),
-                                  child: Text(
-                                    classificacao.sigla,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              : const Text(
-                                  "Sem \nclassificação",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey),
                                 ),
-                          onTap: () {
-                            setState(() {
-                              indicadorSelecionadoId = i.indicadorId;
-                            });
-                          },
+                                child: Text(
+                                  n,
+                                  style: TextStyle(
+                                    fontWeight: selecionado
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  Text(
+                    "Manobras",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium!.copyWith(color: Colors.white),
+                  ),
+
+                  // --- lista de manobras
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: manobras.map((m) {
+                      final selecionado =
+                          manobraSelecionada?.tipoAcaoId == m.tipoAcaoId;
+                      return GestureDetector(
+                        onTap: () => _selecionarManobra(m),
+                        child: Card(
+                          color: selecionado
+                              ? Colors.teal.shade400
+                              : Colors.teal.shade700.withOpacity(0.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: selecionado
+                                  ? Colors.tealAccent
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Text(
+                              m.nome,
+                              style: TextStyle(
+                                color: selecionado
+                                    ? Colors.white
+                                    : Colors.teal.shade100,
+                                fontWeight: selecionado
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     }).toList(),
                   ),
-                )
-              else
-                Text(
-                  "Nenhum indicador encontrado",
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                ),
-            ],
 
-            // --- barra inferior de classificação
-            if (indicadorSelecionadoId != null)
-              Container(
-                // color: Colors.black87,
-                padding: const EdgeInsets.all(8),
-                child: ClassificacoesButtons(
-                  selecionado: classificacoes[indicadorSelecionadoId],
-                  onClassificar: (c) {
-                    setState(() {
-                      classificacoes[indicadorSelecionadoId!] = c;
-                    });
-                  },
-                ),
+                  // --- indicadores
+                  if (manobraSelecionada != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      "Indicadores",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium!.copyWith(color: Colors.white),
+                    ),
+
+                    if (manobraSelecionada!.indicadores != null &&
+                        manobraSelecionada!.indicadores!.isNotEmpty)
+                      Expanded(
+                        child: ListView(
+                          children: manobraSelecionada!.indicadores!.map((i) {
+                            final selecionado =
+                                indicadorSelecionadoId == i.indicadorId;
+                            final classificacao = classificacoes[i.indicadorId];
+
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[800],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: selecionado
+                                      ? Colors.grey.shade600
+                                      : Colors.grey.shade800,
+                                  width: 2,
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  i.descricao,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                trailing: classificacao != null
+                                    ? Container(
+                                        width: 45,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: classificacao.backgroundColor,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: classificacao.borderColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          classificacao.sigla,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Sem \nclassificação",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                onTap: () {
+                                  setState(() {
+                                    indicadorSelecionadoId = i.indicadorId;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    else
+                      Text(
+                        "Nenhum indicador encontrado",
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                      ),
+                  ],
+
+                  // --- barra inferior de classificação
+                ],
               ),
-          ],
-        ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClassificacoesButtons(
+              selecionado: classificacoes[indicadorSelecionadoId],
+              onClassificar: (c) {
+                setState(() {
+                  if (indicadorSelecionadoId != null) {
+                    classificacoes[indicadorSelecionadoId!] = c;
+                  }
+                });
+              },
+            ),
+          ),
+
+          Container(
+            color: Colors.black54,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // --- Próxima Manobra ---
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      ondaAtualId ??= await salvarOnda(terminouCaindo: false);
+                      if (ondaAtualId != null) {
+                        salvarManobra(
+                          ondaAtualId!,
+                        ); // salva a manobra atual e limpa seleções
+                      }
+                      // manter estado da onda
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueGrey.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text("Próxima Manobra"),
+                  ),
+
+                  // --- Saiu da Onda ---
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      salvarOnda(terminouCaindo: false);
+                      ondaAtualId = null;
+                      clear();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade600,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    icon: const Icon(Icons.flag_rounded),
+                    label: const Text("Saiu"),
+                  ),
+
+                  // --- Caiu da Onda ---
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      salvarOnda(terminouCaindo: true);
+                      ondaAtualId = null;
+                      clear();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade700,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    icon: const Icon(Icons.warning_amber_rounded),
+                    label: const Text("Caiu"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Side getSide() {
+    final base = widget.surfista.base;
+    final lado = ladoOnda;
+
+    if (base == null || lado == null) {
+      // Valor padrão ou tratamento de erro
+      return Side.frontside;
+    }
+
+    if (base == BaseSurfista.regular && lado == LadoOnda.direita) {
+      return Side.frontside;
+    } else if (base == BaseSurfista.regular && lado == LadoOnda.esquerda) {
+      return Side.backside;
+    } else if (base == BaseSurfista.goofy && lado == LadoOnda.direita) {
+      return Side.backside;
+    } else if (base == BaseSurfista.goofy && lado == LadoOnda.esquerda) {
+      return Side.frontside;
+    }
+
+    // Caso imprevisto
+    return Side.frontside;
   }
 }
