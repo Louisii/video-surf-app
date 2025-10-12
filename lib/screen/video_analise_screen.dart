@@ -86,6 +86,9 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                         child: TagsRegistradasWidget(
                           key: ValueKey(reloadKey),
                           idVideo: widget.video.videoId!,
+                          onIrParaTempo: (tempoMs) {
+                            player.seek(Duration(milliseconds: tempoMs));
+                          },
                         ),
                       ),
                     ],

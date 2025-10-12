@@ -6,8 +6,13 @@ import 'package:video_surf_app/widget/video_analise/tags_registradas/onda_expans
 
 class TagsRegistradasWidget extends StatefulWidget {
   final int idVideo;
+  final void Function(int tempoMs)? onIrParaTempo;
 
-  const TagsRegistradasWidget({super.key, required this.idVideo});
+  const TagsRegistradasWidget({
+    super.key,
+    required this.idVideo,
+    this.onIrParaTempo,
+  });
 
   @override
   State<TagsRegistradasWidget> createState() => _TagsRegistradasWidgetState();
@@ -151,6 +156,7 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
                 },
                 onExcluirOnda: (onda) => _excluirOnda(onda),
                 onExcluirManobra: (idManobra) => _excluirManobra(idManobra),
+                 onIrParaTempo: widget.onIrParaTempo,
               );
             },
           );

@@ -15,6 +15,7 @@ class OndaListTile extends StatefulWidget {
     required this.onExpansionChanged,
     this.onExcluirOnda,
     this.onExcluirManobra,
+    this.onIrParaTempo,
   });
 
   final Onda onda;
@@ -23,6 +24,7 @@ class OndaListTile extends StatefulWidget {
   final void Function(bool expanded) onExpansionChanged;
   final void Function(Onda onda)? onExcluirOnda;
   final void Function(int idManobra)? onExcluirManobra;
+  final void Function(int tempoMs)? onIrParaTempo;
 
   @override
   State<OndaListTile> createState() => _OndaListTileState();
@@ -105,56 +107,66 @@ class _OndaListTileState extends State<OndaListTile> {
             widget.onExpansionChanged(expanded);
           },
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "🌊 Onda ${widget.index + 1}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "${widget.onda.manobrasAvaliadas.length} manobras",
-                style: const TextStyle(color: Colors.white70),
-              ),
-              Text(
-                "${widget.onda.mediaDesempenhoPercent().toStringAsFixed(0)}%",
-                style: const TextStyle(color: Colors.tealAccent),
-              ),
-              PopupMenuButton<String>(
-                color: Colors.grey[850],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                icon: const Icon(Icons.more_vert, color: Colors.white70),
-                onSelected: (value) {
-                  if (value == 'excluir') {
-                    _confirmarExclusao(
-                      context: context,
-                      titulo: 'Excluir onda',
-                      mensagem:
-                          'Tem certeza de que deseja excluir esta onda e todas as manobras associadas?',
-                      onConfirmar: () =>
-                          widget.onExcluirOnda?.call(widget.onda),
-                    );
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'excluir',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline, color: Colors.redAccent),
-                        SizedBox(width: 8),
-                        Text('Excluir onda'),
-                      ],
-                    ),
+          title: GestureDetector(
+            onTap: () {
+              if (widget.onIrParaTempo != null &&
+                  widget.onda.manobrasAvaliadas.isNotEmpty) {
+                final tempoMs = widget.onda.manobrasAvaliadas.first.tempoMs;
+                widget.onIrParaTempo!(tempoMs);
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Onda ${widget.index + 1}",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
-            ],
+                ),
+                Text(
+                  "${widget.onda.manobrasAvaliadas.length} ${widget.onda.manobrasAvaliadas.length == 1 ? "manobra" : "manobras"}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+
+                Text(
+                  "${widget.onda.mediaDesempenhoPercent().toStringAsFixed(0)}%",
+                  style: const TextStyle(color: Colors.tealAccent),
+                ),
+                PopupMenuButton<String>(
+                  color: Colors.grey[850],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  icon: const Icon(Icons.more_vert, color: Colors.white70),
+                  onSelected: (value) {
+                    if (value == 'excluir') {
+                      _confirmarExclusao(
+                        context: context,
+                        titulo: 'Excluir onda',
+                        mensagem:
+                            'Tem certeza de que deseja excluir esta onda e todas as manobras associadas?',
+                        onConfirmar: () =>
+                            widget.onExcluirOnda?.call(widget.onda),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'excluir',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_outline, color: Colors.redAccent),
+                          SizedBox(width: 8),
+                          Text('Excluir onda'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           children: widget.onda.manobrasAvaliadas.map((manobra) {
             return Card(
