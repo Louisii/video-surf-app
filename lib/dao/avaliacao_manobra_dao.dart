@@ -91,4 +91,33 @@ class AvaliacaoManobraDao {
       rethrow; // repassa o erro para o chamador
     }
   }
+
+  Future<void> delete(int manobraId) async {
+    final db = await DB.instance.database;
+
+    try {
+      // 1️⃣ Exclui os indicadores vinculados à manobra
+      await db!.delete(
+        AvaliacaoIndicadorFields.tableName,
+        where: '${AvaliacaoIndicadorFields.idAvaliacaoManobra} = ?',
+        whereArgs: [manobraId],
+      );
+
+      // 2️⃣ Exclui a manobra
+      await db.delete(
+        AvaliacaoManobraFields.tableName,
+        where: '${AvaliacaoManobraFields.avaliacaoManobraId} = ?',
+        whereArgs: [manobraId],
+      );
+
+      if (kDebugMode) {
+        print('Manobra $manobraId e seus indicadores foram excluídos.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Erro ao excluir manobra $manobraId: $e');
+      }
+      rethrow; // repassa o erro para tratamento na camada superior
+    }
+  }
 }

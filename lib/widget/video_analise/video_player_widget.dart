@@ -117,7 +117,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         // --- Controles ---
         Container(
           color: Colors.grey[900],
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Column(
             children: [
               // Barra de progresso
@@ -147,7 +147,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
 
               // Controles inferiores
               Row(

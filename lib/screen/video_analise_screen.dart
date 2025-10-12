@@ -11,8 +11,8 @@ import 'package:video_surf_app/widget/video_analise/local_widget.dart';
 import 'package:video_surf_app/widget/video_analise/perfil_atleta.dart';
 import 'dart:io'; // <<--- necessário para File, Directory etc.
 import 'package:video_surf_app/widget/video_analise/screenshots_widget.dart';
-import 'package:video_surf_app/widget/video_analise/tagging_widget.dart';
-import 'package:video_surf_app/widget/video_analise/tags_registradas_widget.dart';
+import 'package:video_surf_app/widget/video_analise/tagging/tagging_widget.dart';
+import 'package:video_surf_app/widget/video_analise/tags_registradas/tags_registradas_widget.dart';
 import 'package:video_surf_app/widget/video_analise/video_player_widget.dart'; // <<--- necessário
 
 class VideoAnaliseScreen extends StatefulWidget {
@@ -43,6 +43,8 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
 
   // Lista para guardar os screenshots
   final List<Uint8List> screenshots = [];
+
+  int reloadKey = 0;
 
   @override
   void initState() {
@@ -82,7 +84,7 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                     children: [
                       Expanded(
                         child: TagsRegistradasWidget(
-                          //pq o player do video esta fazendo essa widget re renderizar
+                          key: ValueKey(reloadKey),
                           idVideo: widget.video.videoId!,
                         ),
                       ),
@@ -108,6 +110,7 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
                     surfista: widget.surfista,
                     video: widget.video,
                     getVideoPosition: () => position,
+                    onNovaTagCriada: _onNovaTagCriada,
                   ),
                 ),
               ],
@@ -118,5 +121,11 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
         ),
       ),
     );
+  }
+
+  void _onNovaTagCriada() {
+    setState(() {
+      reloadKey++; // força rebuild com nova Key
+    });
   }
 }

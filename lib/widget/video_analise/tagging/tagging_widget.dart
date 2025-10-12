@@ -15,18 +15,19 @@ import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/widget/classificacao/classificacoes_buttons.dart';
-import 'package:video_surf_app/widget/video_analise/lado_onda_widget.dart';
+import 'package:video_surf_app/widget/video_analise/tagging/lado_onda_widget.dart';
 
 class TaggingWidget extends StatefulWidget {
   final Surfista surfista;
   final Duration Function() getVideoPosition;
   final Video video;
-
+  final VoidCallback? onNovaTagCriada;
   const TaggingWidget({
     super.key,
     required this.surfista,
     required this.getVideoPosition,
     required this.video,
+    this.onNovaTagCriada,
   });
 
   @override
@@ -412,6 +413,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                         salvarManobra(
                           ondaAtualId!,
                         ); // salva a manobra atual e limpa seleções
+                        widget.onNovaTagCriada?.call();
                       }
                       // manter estado da onda
                     },
@@ -431,6 +433,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                     onPressed: () {
                       salvarOnda(terminouCaindo: false);
                       ondaAtualId = null;
+                      widget.onNovaTagCriada?.call();
                       clear();
                     },
                     style: ElevatedButton.styleFrom(
@@ -441,7 +444,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                       ),
                     ),
                     icon: const Icon(Icons.flag_rounded),
-                    label: const Text("Saiu"),
+                    label: const Text("Finalizou"),
                   ),
 
                   // --- Caiu da Onda ---
@@ -449,6 +452,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                     onPressed: () {
                       salvarOnda(terminouCaindo: true);
                       ondaAtualId = null;
+                      widget.onNovaTagCriada?.call();
                       clear();
                     },
                     style: ElevatedButton.styleFrom(
