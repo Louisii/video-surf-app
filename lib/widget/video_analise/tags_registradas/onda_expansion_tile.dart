@@ -201,7 +201,10 @@ class _OndaListTileState extends State<OndaListTile> {
                         children: [
                           Icon(Icons.delete_outline, color: Colors.redAccent),
                           SizedBox(width: 8),
-                          Text('Excluir onda'),
+                          Text(
+                            'Excluir onda',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
@@ -218,6 +221,7 @@ class _OndaListTileState extends State<OndaListTile> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ExpansionTile(
+                initiallyExpanded: false,
                 tilePadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 0,
@@ -236,9 +240,12 @@ class _OndaListTileState extends State<OndaListTile> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          tipoNome,
-                          style: const TextStyle(color: Colors.white),
+                        SizedBox(
+                          width: 90,
+                          child: Text(
+                            tipoNome,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
 
                         Row(
