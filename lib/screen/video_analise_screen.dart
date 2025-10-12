@@ -13,7 +13,9 @@ import 'dart:io'; // <<--- necessário para File, Directory etc.
 import 'package:video_surf_app/widget/video_analise/screenshots_widget.dart';
 import 'package:video_surf_app/widget/video_analise/tagging/tagging_widget.dart';
 import 'package:video_surf_app/widget/video_analise/tags_registradas/tags_registradas_widget.dart';
-import 'package:video_surf_app/widget/video_analise/video_player_widget.dart'; // <<--- necessário
+import 'package:video_surf_app/widget/video_analise/video_player_widget.dart';
+
+import 'package:multi_split_view/multi_split_view.dart';
 
 class VideoAnaliseScreen extends StatefulWidget {
   final Surfista surfista;
@@ -69,31 +71,41 @@ class _VideoAnaliseScreenState extends State<VideoAnaliseScreen> {
             // Parte principal com vídeo e controles
             Expanded(
               flex: 4,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: VideoPlayerWidget(
-                      surfista: widget.surfista,
-                      player: player,
-                      controller: controller,
-                      onPositionChanged: (pos) => position = pos,
-                    ),
+              child: MultiSplitViewTheme(
+                data: MultiSplitViewThemeData(
+                  dividerThickness: 6,
+                  dividerPainter: DividerPainters.grooved1(
+                    color: Colors.tealAccent,
                   ),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TagsRegistradasWidget(
-                          key: ValueKey(reloadKey),
-                          idVideo: widget.video.videoId!,
-                          onIrParaTempo: (tempoMs) {
-                            player.seek(Duration(milliseconds: tempoMs));
-                          },
-                        ),
-                      ),
+                ),
+                child: MultiSplitView(
+                  axis: Axis.vertical,
+                  controller: MultiSplitViewController(
+                    areas: [
+                      Area(size: 580, min: 260), // vídeo
+                      Area(size: 0.6, min: 60), // tags
                     ],
                   ),
-                ],
+                  builder: (context, area) {
+                    // O builder é chamado para cada área
+                    if (area.index == 0) {
+                      return VideoPlayerWidget(
+                        surfista: widget.surfista,
+                        player: player,
+                        controller: controller,
+                        onPositionChanged: (pos) => position = pos,
+                      );
+                    } else {
+                      return TagsRegistradasWidget(
+                        key: ValueKey(reloadKey),
+                        idVideo: widget.video.videoId!,
+                        onIrParaTempo: (tempoMs) {
+                          player.seek(Duration(milliseconds: tempoMs));
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
             ),
             //barra lateral com tags e indicadors

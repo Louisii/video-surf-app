@@ -111,7 +111,6 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 260,
       decoration: BoxDecoration(
         color: Colors.grey[850],
         border: Border.all(color: Colors.black87),
@@ -156,7 +155,7 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
                 },
                 onExcluirOnda: (onda) => _excluirOnda(onda),
                 onExcluirManobra: (idManobra) => _excluirManobra(idManobra),
-                 onIrParaTempo: widget.onIrParaTempo,
+                onIrParaTempo: widget.onIrParaTempo,
               );
             },
           );
