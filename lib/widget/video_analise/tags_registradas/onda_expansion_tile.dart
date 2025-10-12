@@ -74,6 +74,13 @@ class _OndaListTileState extends State<OndaListTile> {
     if (confirmar == true) onConfirmar();
   }
 
+  String formatTempo(int tempoMs) {
+    final totalSeconds = (tempoMs / 1000).floor();
+    final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -106,7 +113,7 @@ class _OndaListTileState extends State<OndaListTile> {
             setState(() => isExpanded = expanded);
             widget.onExpansionChanged(expanded);
           },
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           title: GestureDetector(
             onTap: () {
               if (widget.onIrParaTempo != null &&
@@ -125,15 +132,50 @@ class _OndaListTileState extends State<OndaListTile> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                GestureDetector(
+                  onTap: () {
+                    if (widget.onIrParaTempo != null &&
+                        widget.onda.manobrasAvaliadas.isNotEmpty) {
+                      final tempoMs =
+                          widget.onda.manobrasAvaliadas.first.tempoMs;
+                      widget.onIrParaTempo!(tempoMs);
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 4,
+                    children: [
+                      Icon(Icons.timer_sharp, color: Colors.white70),
+                      Text(
+                        widget.onda.manobrasAvaliadas.isNotEmpty
+                            ? formatTempo(
+                                widget.onda.manobrasAvaliadas.first.tempoMs,
+                              )
+                            : "00:00",
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+
                 Text(
                   "${widget.onda.manobrasAvaliadas.length} ${widget.onda.manobrasAvaliadas.length == 1 ? "manobra" : "manobras"}",
                   style: const TextStyle(color: Colors.white70),
                 ),
 
-                Text(
-                  "${widget.onda.mediaDesempenhoPercent().toStringAsFixed(0)}%",
-                  style: const TextStyle(color: Colors.tealAccent),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.insights, color: Colors.tealAccent),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${widget.onda.mediaDesempenhoPercent().toStringAsFixed(0)}%",
+                      style: const TextStyle(color: Colors.tealAccent),
+                    ),
+                  ],
                 ),
+
                 PopupMenuButton<String>(
                   color: Colors.grey[850],
                   shape: RoundedRectangleBorder(
@@ -178,11 +220,11 @@ class _OndaListTileState extends State<OndaListTile> {
               child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(
                   horizontal: 12,
-                  vertical: 4,
+                  vertical: 0,
                 ),
                 childrenPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
-                  vertical: 4,
+                  vertical: 0,
                 ),
                 title: FutureBuilder<TipoAcao?>(
                   future: _tipoAcoesCache.putIfAbsent(
@@ -198,10 +240,20 @@ class _OndaListTileState extends State<OndaListTile> {
                           tipoNome,
                           style: const TextStyle(color: Colors.white),
                         ),
-                        Text(
-                          "${manobra.mediaDesempenhoPercent().toStringAsFixed(0)}%",
-                          style: const TextStyle(color: Colors.tealAccent),
+
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.insights, color: Colors.tealAccent),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${manobra.mediaDesempenhoPercent().toStringAsFixed(0)}%",
+                              style: const TextStyle(color: Colors.tealAccent),
+                            ),
+                          ],
                         ),
+
                         PopupMenuButton<String>(
                           color: Colors.grey[850],
                           shape: RoundedRectangleBorder(

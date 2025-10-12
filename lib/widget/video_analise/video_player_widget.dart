@@ -117,7 +117,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         // --- Controles ---
         Container(
           color: Colors.grey[900],
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: Column(
             children: [
               // Barra de progresso
