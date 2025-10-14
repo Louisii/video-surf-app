@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_surf_app/dao/onda_dao.dart';
 import 'package:video_surf_app/dao/avaliacao_manobra_dao.dart';
 import 'package:video_surf_app/model/onda.dart';
+import 'package:video_surf_app/providers/onda_provider.dart';
+import 'package:video_surf_app/providers/ondas_provider.dart';
 import 'package:video_surf_app/widget/video_analise/tags_registradas/onda_expansion_tile.dart';
 
 class TagsRegistradasWidget extends StatefulWidget {
@@ -19,20 +22,9 @@ class TagsRegistradasWidget extends StatefulWidget {
 }
 
 class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
-  late Future<List<Onda>> _ondasFuture;
   final Map<int, bool> _ondaExpandedMap = {};
 
-  @override
-  void initState() {
-    super.initState();
-    _carregarOndas();
-  }
-
-  void _carregarOndas() {
-    _ondasFuture = OndaDao().findByVideo(widget.idVideo);
-  }
-
-  Future<void> _excluirOnda(Onda onda) async {
+  Future<void> _excluirOnda(Onda onda, OndasProvider ondasProvider) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -65,12 +57,22 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
     );
 
     if (confirm == true) {
-      await OndaDao().delete(onda.ondaId!);
-      setState(_carregarOndas);
+      if (mounted) {
+        final OndaProvider ondaProvider = Provider.of<OndaProvider>(
+          context,
+          listen: false,
+        );
+        ondaProvider.setOnda(null);
+        await OndaDao().delete(onda.ondaId!);
+        ondasProvider.removeOnda(onda.ondaId!);
+      }
     }
   }
 
-  Future<void> _excluirManobra(int manobraId) async {
+  Future<void> _excluirManobra(
+    int manobraId,
+    OndasProvider ondasProvider,
+  ) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -104,19 +106,20 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
 
     if (confirm == true) {
       await AvaliacaoManobraDao().delete(manobraId);
-      setState(_carregarOndas);
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final OndasProvider ondasProvider = Provider.of<OndasProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[850],
         border: Border.all(color: Colors.black87),
       ),
       child: FutureBuilder<List<Onda>>(
-        future: _ondasFuture,
+        future: OndaDao().findByVideo(widget.idVideo),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -137,6 +140,7 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
           }
 
           List<Onda> ondas = snapshot.data!;
+          ondasProvider.inicializarOndas(ondas);
 
           return ListView.builder(
             itemCount: ondas.length,
@@ -153,8 +157,9 @@ class _TagsRegistradasWidgetState extends State<TagsRegistradasWidget> {
                     _ondaExpandedMap[onda.ondaId!] = expanded;
                   });
                 },
-                onExcluirOnda: (onda) => _excluirOnda(onda),
-                onExcluirManobra: (idManobra) => _excluirManobra(idManobra),
+                onExcluirOnda: (onda) => _excluirOnda(onda, ondasProvider),
+                onExcluirManobra: (idManobra) =>
+                    _excluirManobra(idManobra, ondasProvider),
                 onIrParaTempo: widget.onIrParaTempo,
               );
             },

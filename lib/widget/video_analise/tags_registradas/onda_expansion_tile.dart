@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_surf_app/dao/indicador_dao.dart';
 import 'package:video_surf_app/dao/tipo_acao_dao.dart';
 import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
+import 'package:video_surf_app/providers/onda_provider.dart';
 
 class OndaListTile extends StatefulWidget {
   const OndaListTile({
@@ -83,6 +85,10 @@ class _OndaListTileState extends State<OndaListTile> {
 
   @override
   Widget build(BuildContext context) {
+    final OndaProvider ondaProvider = Provider.of<OndaProvider>(context);
+    bool isOndaAtual =
+        ondaProvider.onda != null &&
+        ondaProvider.onda!.ondaId == widget.onda.ondaId;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
@@ -90,6 +96,9 @@ class _OndaListTileState extends State<OndaListTile> {
       decoration: BoxDecoration(
         color: Colors.teal[900],
         borderRadius: BorderRadius.circular(12),
+        border: isOndaAtual
+            ? Border.all(color: Colors.tealAccent, width: 2)
+            : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
@@ -293,7 +302,10 @@ class _OndaListTileState extends State<OndaListTile> {
                                     color: Colors.redAccent,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Excluir manobra'),
+                                  Text(
+                                    'Excluir manobra',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ],
                               ),
                             ),

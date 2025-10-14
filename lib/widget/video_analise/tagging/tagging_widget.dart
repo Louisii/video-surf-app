@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_surf_app/dao/avaliacao_indicador_dao.dart';
+import 'package:provider/provider.dart';
 import 'package:video_surf_app/dao/avaliacao_manobra_dao.dart';
 import 'package:video_surf_app/dao/onda_dao.dart';
 import 'package:video_surf_app/dao/tipo_acao_dao.dart';
@@ -9,11 +9,12 @@ import 'package:video_surf_app/model/enum/base_surfista.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/enum/lado_onda.dart';
 import 'package:video_surf_app/model/enum/side.dart';
-import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
+import 'package:video_surf_app/providers/onda_provider.dart';
+import 'package:video_surf_app/providers/ondas_provider.dart';
 import 'package:video_surf_app/widget/classificacao/classificacoes_buttons.dart';
 import 'package:video_surf_app/widget/video_analise/tagging/lado_onda_widget.dart';
 
@@ -42,8 +43,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   TipoAcao? manobraSelecionada;
 
   LadoOnda? ladoOnda;
-
-  int? ondaAtualId;
 
   // estado da classificação
   Map<int, Classificacao?> classificacoes = {}; // indicadorId -> classificação
@@ -88,29 +87,10 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     });
   }
 
-  Future<int?> salvarOnda({required bool terminouCaindo}) async {
-    if (ladoOnda == null) {
-      // TODO: mostrar mensagem ao usuário
-      return null;
-    }
-
-    if (widget.surfista.surfistaId == null || widget.video.videoId == null) {
-      return null;
-    }
-
-    Onda onda = Onda(
-      ondaId: ondaAtualId,
-      surfistaId: widget.surfista.surfistaId!,
-      localId: widget.video.localId,
-      videoId: widget.video.videoId!,
-      data: DateTime.now(),
-      ladoOnda: ladoOnda!,
-      terminouCaindo: terminouCaindo,
-    );
-
-    if (ondaAtualId != null) {
+  Future<int?> salvarOndaDB(Onda onda) async {
+    if (onda.ondaId != null) {
       await OndaDao().update(onda);
-      return ondaAtualId;
+      return onda.ondaId;
     } else {
       int ondaId = await OndaDao().createOnda(onda);
       return ondaId;
@@ -120,15 +100,43 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   clear() {
     setState(() {
       manobraSelecionada = null;
-      classificacoes.clear();
-      ladoOnda = null;
+      // classificacoes.clear();
+      // ladoOnda = null;
     });
   }
 
-  Future<void> salvarManobra(int ondaId) async {
-    if (manobraSelecionada == null) return;
+  Future<void> salvarManobra(
+    OndaProvider ondaProvider,
+    OndasProvider ondasProvider,
+  ) async {
+    if (manobraSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Selecione a manobra realizada!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      return;
+    }
     if (ladoOnda == null) {
-      // TODO: mensagem de erro
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Selecione o lado da onda!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (ondaProvider.onda == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Erro: onda é null!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
       return;
     }
 
@@ -143,7 +151,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
         [];
 
     AvaliacaoManobra manobraAvaliada = AvaliacaoManobra(
-      ondaId: ondaId,
+      ondaId: ondaProvider.onda!.ondaId!,
       idTipoAcao: manobraSelecionada!.tipoAcaoId!,
       side: getSide(),
       tempoMs: widget.getVideoPosition().inMilliseconds,
@@ -151,7 +159,20 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     );
 
     await AvaliacaoManobraDao().createManobra(manobraAvaliada);
+    if (ondaProvider.onda == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Erro: onda é null!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
 
+      return;
+    }
+    ondaProvider.addManobraAvaliada(manobraAvaliada);
+    ondasProvider.updateOnda(ondaProvider.onda!);
     setState(() {
       manobraSelecionada = null;
       classificacoes.clear();
@@ -160,6 +181,14 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final OndaProvider ondaProvider = Provider.of<OndaProvider>(
+      context,
+      listen: false,
+    );
+    final OndasProvider ondasProvider = Provider.of<OndasProvider>(
+      context,
+      listen: false,
+    );
     return Container(
       width: 460,
       // width: 324,
@@ -408,14 +437,11 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   // --- Próxima Manobra ---
                   ElevatedButton.icon(
                     onPressed: () async {
-                      ondaAtualId ??= await salvarOnda(terminouCaindo: false);
-                      if (ondaAtualId != null) {
-                        salvarManobra(
-                          ondaAtualId!,
-                        ); // salva a manobra atual e limpa seleções
-                        widget.onNovaTagCriada?.call();
+                      if (ondaProvider.onda == null) {
+                        await criarOnda(ondaProvider, false, ondasProvider);
                       }
-                      // manter estado da onda
+                      salvarManobra(ondaProvider, ondasProvider);
+                      clear();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueGrey.shade600,
@@ -430,10 +456,16 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
                   // --- Saiu da Onda ---
                   ElevatedButton.icon(
-                    onPressed: () {
-                      salvarOnda(terminouCaindo: false);
-                      ondaAtualId = null;
-                      widget.onNovaTagCriada?.call();
+                    onPressed: () async {
+                      if (ondaProvider.onda == null) {
+                        await criarOnda(ondaProvider, false, ondasProvider);
+                        await salvarManobra(ondaProvider, ondasProvider);
+                        ondaProvider.setOnda(null);
+                      } else {
+                        await salvarManobra(ondaProvider, ondasProvider);
+                        ondaProvider.setOnda(null);
+                      }
+
                       clear();
                     },
                     style: ElevatedButton.styleFrom(
@@ -449,10 +481,17 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
                   // --- Caiu da Onda ---
                   ElevatedButton.icon(
-                    onPressed: () {
-                      salvarOnda(terminouCaindo: true);
-                      ondaAtualId = null;
-                      widget.onNovaTagCriada?.call();
+                    onPressed: () async {
+                      if (ondaProvider.onda == null) {
+                        await criarOnda(ondaProvider, true, ondasProvider);
+                      } else {
+                        ondaProvider.updateTerminouCaindo(true);
+                        await salvarOndaDB(ondaProvider.onda!);
+                      }
+
+                      await salvarManobra(ondaProvider, ondasProvider);
+                      ondaProvider.setOnda(null);
+
                       clear();
                     },
                     style: ElevatedButton.styleFrom(
@@ -474,11 +513,72 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     );
   }
 
+  criarOnda(
+    OndaProvider ondaAtualProvider,
+    bool terminouCaindo,
+    OndasProvider ondasProvider,
+  ) async {
+    if (ladoOnda == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Selecione o lado da onda!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return null;
+    }
+
+    if (widget.surfista.surfistaId == null || widget.video.videoId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Erro ao identificar surfista"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return null;
+    }
+
+    Onda onda = Onda(
+      ondaId: null,
+      surfistaId: widget.surfista.surfistaId!,
+      localId: widget.video.localId,
+      videoId: widget.video.videoId!,
+      data: DateTime.now(),
+      ladoOnda: ladoOnda!,
+      terminouCaindo: terminouCaindo,
+    );
+
+    try {
+      int? ondaId = await salvarOndaDB(onda);
+      onda.ondaId = ondaId;
+
+      if (ondaId != null) {
+        ondaAtualProvider.setOnda(onda);
+        ondasProvider.addOnda(onda);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Erro: ondaid = null"),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erro: $e"), duration: Duration(seconds: 2)),
+        );
+      }
+    }
+  }
+
   Side getSide() {
     final base = widget.surfista.base;
     final lado = ladoOnda;
 
-    if (base == null || lado == null) {
+    if (lado == null) {
       // Valor padrão ou tratamento de erro
       return Side.frontside;
     }

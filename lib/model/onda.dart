@@ -6,13 +6,13 @@ import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/surfista.dart';
 
 class Onda {
-  final int? ondaId;
+  int? ondaId;
   final int surfistaId; // FK para Surfista
   final int localId; // FK para Local
   final int videoId; // FK para Video
   final DateTime data;
   final LadoOnda ladoOnda;
-  final bool terminouCaindo;
+  bool terminouCaindo;
 
   // Relações opcionais
   final Surfista? surfista;
@@ -29,8 +29,8 @@ class Onda {
     required this.terminouCaindo,
     this.surfista,
     this.local,
-    this.manobrasAvaliadas = const [],
-  });
+    List<AvaliacaoManobra>? manobrasAvaliadas,
+  }) : manobrasAvaliadas = manobrasAvaliadas ?? [];
 
   double mediaDesempenhoPercent() {
     final manobras = manobrasAvaliadas;
