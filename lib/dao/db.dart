@@ -134,7 +134,8 @@ class DB {
     CREATE TABLE ${TipoAcaoFields.tableName} (
       ${TipoAcaoFields.tipoAcaoId} $integerType $primaryKey,
       ${TipoAcaoFields.nome} $textType NOT NULL,
-      ${TipoAcaoFields.nivel} $textType NOT NULL
+      ${TipoAcaoFields.nivel} $textType NOT NULL,
+      ${TipoAcaoFields.side} $textType NOT NULL
     );
     ''',
 
@@ -144,6 +145,7 @@ class DB {
       ${IndicadorFields.indicadorId} $integerType $primaryKey,
       ${IndicadorFields.descricao} $textType NOT NULL,
       ${IndicadorFields.idTipoAcao} $integerType NOT NULL,
+      ${IndicadorFields.ordemItem} $integerType NOT NULL,
       FOREIGN KEY (${IndicadorFields.idTipoAcao}) REFERENCES ${TipoAcaoFields.tableName}(${TipoAcaoFields.tipoAcaoId}) ON DELETE CASCADE
     );
     ''',

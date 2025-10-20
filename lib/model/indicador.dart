@@ -4,7 +4,7 @@ class Indicador {
   final int? indicadorId;
   final String descricao;
   final int idTipoAcao; // FK para TipoAcao
-
+  final int ordemItem;
   // Relação opcional
   final TipoAcao? tipoAcao;
 
@@ -12,6 +12,7 @@ class Indicador {
     this.indicadorId,
     required this.descricao,
     required this.idTipoAcao,
+    required this.ordemItem,
     this.tipoAcao,
   });
 
@@ -20,6 +21,7 @@ class Indicador {
       IndicadorFields.indicadorId: indicadorId,
       IndicadorFields.descricao: descricao,
       IndicadorFields.idTipoAcao: idTipoAcao,
+      IndicadorFields.ordemItem: ordemItem,
     };
   }
 
@@ -28,6 +30,7 @@ class Indicador {
       indicadorId: map[IndicadorFields.indicadorId] as int?,
       descricao: map[IndicadorFields.descricao] as String,
       idTipoAcao: map[IndicadorFields.idTipoAcao] as int,
+      ordemItem: map[IndicadorFields.ordemItem] as int,
       tipoAcao: null,
     );
   }
@@ -39,6 +42,12 @@ class IndicadorFields {
   static const String indicadorId = 'indicador_id';
   static const String descricao = 'descricao';
   static const String idTipoAcao = 'idTipoAcao';
+  static const String ordemItem = 'ordemItem';
 
-  static const List<String> values = [indicadorId, descricao, idTipoAcao];
+  static const List<String> values = [
+    indicadorId,
+    descricao,
+    idTipoAcao,
+    ordemItem,
+  ];
 }

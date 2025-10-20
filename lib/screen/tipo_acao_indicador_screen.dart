@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:video_surf_app/dao/indicador_dao.dart';
 import 'package:video_surf_app/dao/tipo_acao_dao.dart';
+import 'package:video_surf_app/model/enum/side.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
@@ -62,7 +63,8 @@ class _TipoAcaoIndicadorScreenState extends State<TipoAcaoIndicadorScreen> {
     if (result != null && result.files.single.path != null) {
       final file = File(result.files.single.path!);
       final content = await file.readAsString();
-      final rows = const CsvToListConverter().convert(content, eol: '\n');
+      final rows = const CsvToListConverter().convert(content);
+
       final dataRows = rows.skip(1);
 
       final List<String> erros = [];
@@ -75,25 +77,36 @@ class _TipoAcaoIndicadorScreenState extends State<TipoAcaoIndicadorScreen> {
         }
 
         try {
-          final nome = row[0].toString();
-          final nivel = row[1].toString();
-          final descricao = row[2].toString();
+          final nivel = row[0].toString();
+          final side = row[1].toString();
+          final nomeManobra = row[2].toString();
+          final ordemItem = row[3].toString();
+          final descricao = row[4].toString();
 
           // Verifica se tipo ação já existe
           TipoAcao? tipo = await tipoAcaoDao.findByNomeNivel(
-            nome: nome,
+            nome: nomeManobra,
             nivel: nivel,
           );
 
           if (tipo == null) {
-            final novo = TipoAcao(nome: nome, nivel: nivel);
+            final novo = TipoAcao(
+              nome: nomeManobra,
+              nivel: nivel,
+              side: SideExt.findSide(side),
+            );
             final id = await tipoAcaoDao.create(novo);
-            tipo = TipoAcao(tipoAcaoId: id, nome: nome, nivel: nivel);
+            tipo = TipoAcao(
+              tipoAcaoId: id,
+              nome: nomeManobra,
+              nivel: nivel,
+              side: SideExt.findSide(side),
+            );
           }
-
           final indicador = Indicador(
             descricao: descricao,
             idTipoAcao: tipo.tipoAcaoId!,
+            ordemItem: int.tryParse(ordemItem) ?? 0,
           );
           await indicadorDao.create(indicador);
         } catch (e) {

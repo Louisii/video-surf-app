@@ -22,4 +22,32 @@ extension SideExt on Side {
         return Side.desconhecido;
     }
   }
+
+  /// 🔹 Novo método: aceita "FS", "BS", "frontside", "backside", "indefinido"
+  static Side findSide(String? value) {
+    if (value == null) return Side.desconhecido;
+
+    final cleaned = value
+        .trim()
+        .toUpperCase()
+        .replaceAll('\r', '')
+        .replaceAll('"', '');
+
+    switch (cleaned) {
+      case 'FS':
+      case 'FRONTSIDE':
+        return Side.frontside;
+
+      case 'BS':
+      case 'BACKSIDE':
+        return Side.backside;
+
+      case 'INDEFINIDO':
+      case 'DESCONHECIDO':
+        return Side.desconhecido;
+
+      default:
+        return Side.desconhecido;
+    }
+  }
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:video_surf_app/dao/db.dart';
 import 'package:video_surf_app/providers/onda_provider.dart';
 import 'package:video_surf_app/providers/ondas_provider.dart';
 import 'package:video_surf_app/screen/initial_screen.dart';
@@ -16,9 +18,9 @@ void main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-  // if (kDebugMode) {
-  //   await DB.deleteDatabaseFile(); // só apaga no modo debug
-  // }
+  if (kDebugMode) {
+    await DB.deleteDatabaseFile(); // só apaga no modo debug
+  }
 
   runApp(const MyApp());
 }
