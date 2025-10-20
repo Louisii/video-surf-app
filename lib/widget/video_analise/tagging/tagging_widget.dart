@@ -429,7 +429,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0,
-                                        left: 2,
+                                        left: 4,
                                       ),
                                       child: Text(
                                         i.ordemItem.toString(),
