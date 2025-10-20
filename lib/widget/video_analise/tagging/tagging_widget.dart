@@ -233,6 +233,8 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                           setState(() {
                             ladoOnda = lado;
                             manobrasFiltradasPorSide;
+                            manobraSelecionada = null;
+                            classificacoes = {};
                           });
                         },
                       ),
@@ -343,7 +345,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
                   // --- indicadores
                   if (manobraSelecionada != null) ...[
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Text(
                       "Indicadores",
                       style: Theme.of(
@@ -372,48 +374,74 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                                   width: 2,
                                 ),
                               ),
-                              child: ListTile(
-                                title: Text(
-                                  i.descricao,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                trailing: classificacao != null
-                                    ? Container(
-                                        width: 45,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: classificacao.backgroundColor,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          border: Border.all(
-                                            color: classificacao.borderColor,
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          classificacao.sigla,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      )
-                                    : const Text(
-                                        "Sem \nclassificação",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.grey),
+                              child: Stack(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      i.descricao,
+                                      style: const TextStyle(
+                                        color: Colors.white,
                                       ),
-                                onTap: () {
-                                  setState(() {
-                                    indicadorSelecionadoId = i.indicadorId;
-                                  });
-                                },
+                                    ),
+                                    trailing: classificacao != null
+                                        ? Container(
+                                            width: 45,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  classificacao.backgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color:
+                                                    classificacao.borderColor,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              classificacao.sigla,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          )
+                                        : const Text(
+                                            "Sem \nclassificação",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                    onTap: () {
+                                      setState(() {
+                                        indicadorSelecionadoId = i.indicadorId;
+                                      });
+                                    },
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 0,
+                                        left: 2,
+                                      ),
+                                      child: Text(
+                                        i.ordemItem.toString(),
+                                        style: TextStyle(
+                                          color: Colors.white12,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           }).toList(),
