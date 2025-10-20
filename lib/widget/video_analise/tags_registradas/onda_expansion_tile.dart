@@ -185,6 +185,70 @@ class _OndaListTileState extends State<OndaListTile> {
                   ],
                 ),
 
+                widget.onda.terminouCaindo
+                    ? SizedBox(
+                        width: 103,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Card(
+                              color: Colors.grey.shade700,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  spacing: 4,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.warning_amber_rounded, size: 16),
+                                    Text(
+                                      "Caiu",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(
+                        width: 103,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Card(
+                              color: Colors.teal.shade600,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  spacing: 4,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.flag_rounded, size: 16),
+                                    Text(
+                                      "Finalizou",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                 PopupMenuButton<String>(
                   color: Colors.grey[850],
                   shape: RoundedRectangleBorder(
