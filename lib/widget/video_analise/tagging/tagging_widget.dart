@@ -40,6 +40,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   List<String> niveis = [];
   String? nivelSelecionado;
   List<TipoAcao> manobras = [];
+  List<TipoAcao> manobrasFiltradasPorSide = [];
   TipoAcao? manobraSelecionada;
 
   LadoOnda? ladoOnda;
@@ -68,10 +69,21 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
   Future<void> _loadManobras(String nivel) async {
     List<TipoAcao> lista = await tipoAcaoDao.getByNivel(nivel);
+
     setState(() {
       manobras = lista;
       manobraSelecionada = null;
       classificacoes.clear();
+
+      if (ladoOnda != null) {
+        manobrasFiltradasPorSide = filtrarManobrasPorSide(
+          manobras,
+          ladoOnda!,
+          widget.surfista.base,
+        );
+      } else {
+        manobrasFiltradasPorSide = manobras;
+      }
     });
   }
 
@@ -213,8 +225,14 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                       LadoOndaWidget(
                         valorInicial: ladoOnda,
                         onSelecionar: (lado) {
+                          manobrasFiltradasPorSide = filtrarManobrasPorSide(
+                            manobras,
+                            lado,
+                            widget.surfista.base,
+                          );
                           setState(() {
                             ladoOnda = lado;
+                            manobrasFiltradasPorSide;
                           });
                         },
                       ),
@@ -283,7 +301,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: manobras.map((m) {
+                    children: manobrasFiltradasPorSide.map((m) {
                       final selecionado =
                           manobraSelecionada?.tipoAcaoId == m.tipoAcaoId;
                       return GestureDetector(
@@ -595,5 +613,27 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
     // Caso imprevisto
     return Side.frontside;
+  }
+
+  List<TipoAcao> filtrarManobrasPorSide(
+    List<TipoAcao> manobras,
+    LadoOnda lado,
+    BaseSurfista base,
+  ) {
+    late final Side sideEsperado;
+
+    if (base == BaseSurfista.regular && lado == LadoOnda.direita) {
+      sideEsperado = Side.frontside;
+    } else if (base == BaseSurfista.regular && lado == LadoOnda.esquerda) {
+      sideEsperado = Side.backside;
+    } else if (base == BaseSurfista.goofy && lado == LadoOnda.direita) {
+      sideEsperado = Side.backside;
+    } else {
+      sideEsperado = Side.frontside;
+    }
+
+    return manobras
+        .where((m) => m.side == sideEsperado || m.side == Side.desconhecido)
+        .toList();
   }
 }
