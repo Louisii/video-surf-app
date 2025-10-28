@@ -39,6 +39,7 @@ class IndicadorDao {
       IndicadorFields.tableName,
       where: '${IndicadorFields.idTipoAcao} = ?',
       whereArgs: [idTipoAcao],
+      orderBy: '${IndicadorFields.ordemItem} ASC',
     );
     return result.map((map) => Indicador.fromMap(map)).toList();
   }
