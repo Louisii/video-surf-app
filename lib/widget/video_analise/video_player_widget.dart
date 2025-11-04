@@ -104,11 +104,15 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         // --- Player de vídeo ---
         Expanded(
           child: Center(
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: mkv.Video(
-                controller: widget.controller,
-                controls: mkv.NoVideoControls,
+            child: InteractiveViewer(
+              minScale: 1.0,
+              maxScale: 4.0,
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: mkv.Video(
+                  controller: widget.controller,
+                  controls: mkv.NoVideoControls,
+                ),
               ),
             ),
           ),
@@ -149,89 +153,99 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
 
               // Controles inferiores
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Stack(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.skip_previous, color: Colors.white),
-                    tooltip: "Voltar 1 quadro",
-                    onPressed: () {
-                      final target = position - frameStep;
-                      player.seek(
-                        target > Duration.zero ? target : Duration.zero,
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.replay_10, color: Colors.white),
-                    tooltip: "Voltar 10s",
-                    onPressed: () =>
-                        player.seek(position - const Duration(seconds: 10)),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      isPlaying ? Icons.pause_circle : Icons.play_circle,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      isPlaying ? player.pause() : player.play();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.forward_10, color: Colors.white),
-                    tooltip: "Avançar 10s",
-                    onPressed: () =>
-                        player.seek(position + const Duration(seconds: 10)),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.skip_next, color: Colors.white),
-                    tooltip: "Avançar 1 quadro",
-                    onPressed: () => player.seek(position + frameStep),
-                  ),
-                  const SizedBox(width: 20),
-
-                  // Velocidade
-                  PopupMenuButton<double>(
-                    initialValue: currentSpeed,
-                    onSelected: (value) {
-                      setState(() => currentSpeed = value);
-                      player.setRate(value);
-                    },
-                    color: Colors.grey[850],
-                    itemBuilder: (context) {
-                      return speeds.map((speed) {
-                        return PopupMenuItem<double>(
-                          value: speed,
-                          child: Text(
-                            "${speed}x",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: speed == currentSpeed
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        );
-                      }).toList();
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(Icons.speed, color: Colors.white),
-                        Text(
-                          "${currentSpeed}x",
-                          style: const TextStyle(color: Colors.white),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.skip_previous,
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
+                        tooltip: "Voltar 1 quadro",
+                        onPressed: () {
+                          final target = position - frameStep;
+                          player.seek(
+                            target > Duration.zero ? target : Duration.zero,
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.replay_10, color: Colors.white),
+                        tooltip: "Voltar 2s",
+                        onPressed: () =>
+                            player.seek(position - const Duration(seconds: 2)),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          isPlaying ? Icons.pause_circle : Icons.play_circle,
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          isPlaying ? player.pause() : player.play();
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.forward_10, color: Colors.white),
+                        tooltip: "Avançar 2s",
+                        onPressed: () =>
+                            player.seek(position + const Duration(seconds: 2)),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.skip_next, color: Colors.white),
+                        tooltip: "Avançar 1 quadro",
+                        onPressed: () => player.seek(position + frameStep),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // Velocidade
+                      PopupMenuButton<double>(
+                        initialValue: currentSpeed,
+                        onSelected: (value) {
+                          setState(() => currentSpeed = value);
+                          player.setRate(value);
+                        },
+                        color: Colors.grey[850],
+                        itemBuilder: (context) {
+                          return speeds.map((speed) {
+                            return PopupMenuItem<double>(
+                              value: speed,
+                              child: Text(
+                                "${speed}x",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: speed == currentSpeed
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            );
+                          }).toList();
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(Icons.speed, color: Colors.white),
+                            Text(
+                              "${currentSpeed}x",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
 
-                  // Screenshot
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt, color: Colors.white),
-                    tooltip: "Capturar frame",
-                    onPressed: _takeScreenshot,
+                      // Screenshot
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt, color: Colors.white),
+                        tooltip: "Capturar frame",
+                        onPressed: _takeScreenshot,
+                      ),
+                    ],
                   ),
                 ],
               ),
