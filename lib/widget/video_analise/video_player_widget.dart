@@ -129,7 +129,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 children: [
                   Text(
                     _formatDuration(position),
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Expanded(
                     child: Slider(
@@ -147,7 +147,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   ),
                   Text(
                     _formatDuration(duration),
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],
               ),
