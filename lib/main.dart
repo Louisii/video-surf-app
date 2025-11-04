@@ -18,9 +18,9 @@ void main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-  if (kDebugMode) {
-    await DB.deleteDatabaseFile(); // só apaga no modo debug
-  }
+  // if (kDebugMode) {
+  //   await DB.deleteDatabaseFile(); // só apaga no modo debug
+  // }
 
   runApp(const MyApp());
 }

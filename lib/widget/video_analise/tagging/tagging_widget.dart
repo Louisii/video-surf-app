@@ -42,7 +42,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   List<TipoAcao> manobras = [];
   List<TipoAcao> manobrasFiltradasPorSide = [];
   TipoAcao? manobraSelecionada;
-
+  late int videoPosition;
   LadoOnda? ladoOnda;
 
   // estado da classificação
@@ -89,7 +89,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
 
   Future<void> _selecionarManobra(TipoAcao manobra) async {
     if (manobra.tipoAcaoId == null) return;
-
+    videoPosition = widget.getVideoPosition().inMilliseconds;
     TipoAcao? carregada = await tipoAcaoDao.findWithIndicadores(
       manobra.tipoAcaoId!,
     );
@@ -112,8 +112,6 @@ class _TaggingWidgetState extends State<TaggingWidget> {
   clear() {
     setState(() {
       manobraSelecionada = null;
-      // classificacoes.clear();
-      // ladoOnda = null;
     });
   }
 
@@ -166,7 +164,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       ondaId: ondaProvider.onda!.ondaId!,
       idTipoAcao: manobraSelecionada!.tipoAcaoId!,
       side: getSide(),
-      tempoMs: widget.getVideoPosition().inMilliseconds,
+      tempoMs: videoPosition,
       avaliacaoIndicadores: indicadoresAvaliados,
     );
 
@@ -484,7 +482,12 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       if (ondaProvider.onda == null) {
-                        await criarOnda(ondaProvider, false, ondasProvider);
+                        await criarOnda(
+                          ondaProvider,
+                          false,
+                          ondasProvider,
+                          false,
+                        );
                       }
                       salvarManobra(ondaProvider, ondasProvider);
                       clear();
@@ -504,7 +507,12 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       if (ondaProvider.onda == null) {
-                        await criarOnda(ondaProvider, false, ondasProvider);
+                        await criarOnda(
+                          ondaProvider,
+                          false,
+                          ondasProvider,
+                          true,
+                        );
                         await salvarManobra(ondaProvider, ondasProvider);
                         ondaProvider.setOnda(null);
                       } else {
@@ -529,7 +537,12 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       if (ondaProvider.onda == null) {
-                        await criarOnda(ondaProvider, true, ondasProvider);
+                        await criarOnda(
+                          ondaProvider,
+                          true,
+                          ondasProvider,
+                          true,
+                        );
                       } else {
                         ondaProvider.updateTerminouCaindo(true);
                         await salvarOndaDB(ondaProvider.onda!);
@@ -563,6 +576,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
     OndaProvider ondaAtualProvider,
     bool terminouCaindo,
     OndasProvider ondasProvider,
+    bool avaliacaoConcluida,
   ) async {
     if (ladoOnda == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -592,6 +606,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       data: DateTime.now(),
       ladoOnda: ladoOnda!,
       terminouCaindo: terminouCaindo,
+      avaliacaoConcluida: avaliacaoConcluida,
     );
 
     try {

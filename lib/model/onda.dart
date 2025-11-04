@@ -13,6 +13,7 @@ class Onda {
   final DateTime data;
   final LadoOnda ladoOnda;
   bool terminouCaindo;
+  bool avaliacaoConcluida;
 
   // Relações opcionais
   final Surfista? surfista;
@@ -27,6 +28,7 @@ class Onda {
     required this.data,
     required this.ladoOnda,
     required this.terminouCaindo,
+    required this.avaliacaoConcluida,
     this.surfista,
     this.local,
     List<AvaliacaoManobra>? manobrasAvaliadas,
@@ -60,6 +62,7 @@ class Onda {
       OndaFields.data: data.toIso8601String(),
       OndaFields.ladoOnda: ladoOnda.nameDb,
       OndaFields.terminouCaindo: terminouCaindo ? 1 : 0,
+      OndaFields.avaliacaoConcluida: avaliacaoConcluida ? 1 : 0,
     };
   }
 
@@ -72,6 +75,7 @@ class Onda {
       data: DateTime.parse(map[OndaFields.data] as String),
       ladoOnda: LadoOndaExt.fromDb(map[OndaFields.ladoOnda] as String),
       terminouCaindo: map[OndaFields.terminouCaindo] == 1,
+      avaliacaoConcluida: map[OndaFields.avaliacaoConcluida] == 1,
     );
   }
 }
@@ -86,6 +90,7 @@ class OndaFields {
   static const String videoId = 'video_id';
   static const String ladoOnda = 'lado_onda';
   static const String terminouCaindo = 'terminou_caindo';
+  static const String avaliacaoConcluida = 'avaliacao_concluida';
 
   static const List<String> values = [
     ondaId,
@@ -95,5 +100,6 @@ class OndaFields {
     data,
     ladoOnda,
     terminouCaindo,
+    avaliacaoConcluida,
   ];
 }

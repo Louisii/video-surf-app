@@ -141,6 +141,11 @@ class _OndaListTileState extends State<OndaListTile> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
+                Text(
+                  "${widget.onda.manobrasAvaliadas.length} ${widget.onda.manobrasAvaliadas.length == 1 ? "manobra" : "manobras"}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
                 GestureDetector(
                   onTap: () {
                     if (widget.onIrParaTempo != null &&
@@ -167,11 +172,6 @@ class _OndaListTileState extends State<OndaListTile> {
                   ),
                 ),
 
-                Text(
-                  "${widget.onda.manobrasAvaliadas.length} ${widget.onda.manobrasAvaliadas.length == 1 ? "manobra" : "manobras"}",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -185,69 +185,74 @@ class _OndaListTileState extends State<OndaListTile> {
                   ],
                 ),
 
-                widget.onda.terminouCaindo
-                    ? SizedBox(
-                        width: 103,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Card(
-                              color: Colors.grey.shade700,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0,
-                                  horizontal: 8,
-                                ),
-                                child: Row(
-                                  spacing: 4,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.warning_amber_rounded, size: 16),
-                                    Text(
-                                      "Caiu",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                widget.onda.avaliacaoConcluida
+                    ? widget.onda.terminouCaindo
+                          ? SizedBox(
+                              width: 103,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Card(
+                                    color: Colors.grey.shade700,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0,
+                                        horizontal: 8,
+                                      ),
+                                      child: Row(
+                                        spacing: 4,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.warning_amber_rounded,
+                                            size: 16,
+                                          ),
+                                          Text(
+                                            "Caiu",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox(
-                        width: 103,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Card(
-                              color: Colors.teal.shade600,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0,
-                                  horizontal: 8,
-                                ),
-                                child: Row(
-                                  spacing: 4,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.flag_rounded, size: 16),
-                                    Text(
-                                      "Finalizou",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                            )
+                          : SizedBox(
+                              width: 103,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Card(
+                                    color: Colors.teal.shade600,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0,
+                                        horizontal: 8,
+                                      ),
+                                      child: Row(
+                                        spacing: 4,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.flag_rounded, size: 16),
+                                          Text(
+                                            "Finalizou",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            )
+                    : SizedBox(width: 103),
 
                 PopupMenuButton<String>(
                   color: Colors.grey[850],
@@ -309,7 +314,8 @@ class _OndaListTileState extends State<OndaListTile> {
                     () => TipoAcaoDao().getById(manobra.idTipoAcao),
                   ),
                   builder: (context, snapshot) {
-                    final tipoNome = snapshot.data?.nome ?? 'Carregando...';
+                    String tipoNome = snapshot.data?.nome ?? 'Carregando...';
+
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -332,6 +338,27 @@ class _OndaListTileState extends State<OndaListTile> {
                               style: const TextStyle(color: Colors.tealAccent),
                             ),
                           ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (widget.onIrParaTempo != null) {
+                              final tempoMs = manobra.tempoMs;
+                              widget.onIrParaTempo!(tempoMs);
+                            }
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 4,
+                            children: [
+                              Icon(Icons.timer_sharp, color: Colors.white70),
+                              Text(
+                                widget.onda.manobrasAvaliadas.isNotEmpty
+                                    ? formatTempo(manobra.tempoMs)
+                                    : "00:00",
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
                         ),
 
                         PopupMenuButton<String>(

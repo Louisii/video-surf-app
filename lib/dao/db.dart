@@ -172,6 +172,7 @@ class DB {
       ${OndaFields.videoId} $integerType NOT NULL,
       ${OndaFields.ladoOnda} $textType NOT NULL,
       ${OndaFields.terminouCaindo} INTEGER NOT NULL CHECK (${OndaFields.terminouCaindo} IN (0,1)), -- ✅ campo booleano (0 ou 1)
+      ${OndaFields.avaliacaoConcluida} INTEGER NOT NULL CHECK (${OndaFields.avaliacaoConcluida} IN (0,1)), -- ✅ campo booleano (0 ou 1)
       
       FOREIGN KEY (${OndaFields.surfistaId}) REFERENCES ${SurfistaFields.tableName}(${SurfistaFields.surfistaId}) ON DELETE CASCADE,
       FOREIGN KEY (${OndaFields.videoId}) REFERENCES ${VideoFields.tableName}(${VideoFields.videoId}) ON DELETE CASCADE,

@@ -159,7 +159,7 @@ class _NovoVideoDialogState extends State<NovoVideoDialog> {
               children: [
                 Expanded(
                   child: Text(
-                    "Data: ${DateFormat('dd/MM/yyyy – HH:mm').format(selectedDateTime)}",
+                    "Data da sessão: ${DateFormat('dd/MM/yyyy – HH:mm').format(selectedDateTime)}",
                   ),
                 ),
                 IconButton(
