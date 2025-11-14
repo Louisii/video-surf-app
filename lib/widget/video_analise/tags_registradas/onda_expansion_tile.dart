@@ -128,7 +128,9 @@ class _OndaListTileState extends State<OndaListTile> {
               if (widget.onIrParaTempo != null &&
                   widget.onda.manobrasAvaliadas.isNotEmpty) {
                 final tempoMs = widget.onda.manobrasAvaliadas.first.tempoMs;
-                widget.onIrParaTempo!(tempoMs);
+                widget.onIrParaTempo!(
+                  tempoMs > 1000 ? tempoMs - 1000 : tempoMs,
+                );
               }
             },
             child: Row(
@@ -152,7 +154,9 @@ class _OndaListTileState extends State<OndaListTile> {
                         widget.onda.manobrasAvaliadas.isNotEmpty) {
                       final tempoMs =
                           widget.onda.manobrasAvaliadas.first.tempoMs;
-                      widget.onIrParaTempo!(tempoMs);
+                      widget.onIrParaTempo!(
+                        tempoMs > 1000 ? tempoMs - 1000 : tempoMs,
+                      );
                     }
                   },
                   child: Row(
@@ -343,7 +347,9 @@ class _OndaListTileState extends State<OndaListTile> {
                           onTap: () {
                             if (widget.onIrParaTempo != null) {
                               final tempoMs = manobra.tempoMs;
-                              widget.onIrParaTempo!(tempoMs);
+                              widget.onIrParaTempo!(
+                                tempoMs > 1000 ? tempoMs - 1000 : tempoMs,
+                              );
                             }
                           },
                           child: Row(
