@@ -6,11 +6,8 @@ import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_surf_app/widget/video_analise/local_widget.dart';
 import 'package:video_surf_app/widget/video_analise/perfil_atleta.dart';
-import 'dart:io'; // <<--- necessário para File, Directory etc.
-import 'package:video_surf_app/widget/video_analise/screenshots_widget.dart';
 import 'package:video_surf_app/widget/video_analise/tagging/tagging_widget.dart';
 import 'package:video_surf_app/widget/video_analise/tags_registradas/tags_registradas_widget.dart';
 import 'package:video_surf_app/widget/video_analise/video_player_widget.dart';

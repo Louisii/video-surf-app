@@ -15,7 +15,7 @@ class Video {
   // Relações opcionais (carregadas em JOIN ou consultas separadas)
   final Surfista? surfista;
   Local? local;
-  final List<Onda> ondas;
+  List<Onda> ondas;
 
   Video({
     this.videoId,
@@ -27,6 +27,16 @@ class Video {
     this.local,
     this.ondas = const [],
   });
+
+  double mediaDesempenhoPercent() {
+    double soma = 0;
+
+    for (Onda o in ondas) {
+      soma += o.mediaDesempenhoPercent();
+    }
+
+    return (soma / ondas.length);
+  }
 
   Map<String, dynamic> toMap() {
     return {

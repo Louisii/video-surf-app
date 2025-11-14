@@ -201,7 +201,7 @@ class _SurfistarScreenState extends State<SurfistarScreen> {
                             builder: (context, asyncSnapshot) {
                               int n = asyncSnapshot.data ?? 0;
                               return Text(
-                                "$n vídeos",
+                                n != 1 ? "$n vídeos" : "$n vídeo",
                                 style: Theme.of(context).textTheme.bodySmall!
                                     .copyWith(color: Colors.grey),
                               );
