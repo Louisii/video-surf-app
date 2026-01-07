@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_surf_app/dao/onda_dao.dart';
 import 'package:video_surf_app/dao/surfista_dao.dart';
 import 'package:video_surf_app/model/surfista.dart';
+import 'package:video_surf_app/screen/surfista_relatorio_screen.dart';
 import 'package:video_surf_app/widget/dialogs/novo_video_dialog.dart';
 
 class SurfistaProfileWidget extends StatefulWidget {
@@ -122,7 +123,18 @@ class _SurfistaProfileWidgetState extends State<SurfistaProfileWidget> {
                                         label: Text("Novo Vídeo"),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () async {},
+                                        onPressed: () async {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  SurfistaRelatorioScreen(
+                                                    surfista: surfista,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               Colors.white, // fundo branco
