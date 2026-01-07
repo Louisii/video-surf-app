@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:video_surf_app/model/onda.dart';
 import '../model/atleta.dart';
 import '../model/surfista.dart';
 import 'db.dart';
@@ -64,6 +65,25 @@ class SurfistaDao {
     ''');
 
     return maps.map((map) => Surfista.fromMap(map)).toList();
+  }
+
+  /// pega as ondas sem tagging
+  Future<Surfista> getOndas(Surfista surfista) async {
+    final db = await DB.instance.database;
+
+    final maps = await db!.rawQuery(
+      '''
+    SELECT *
+    FROM ${OndaFields.tableName}
+    WHERE ${OndaFields.surfistaId} = ?
+    ORDER BY ${OndaFields.data} DESC
+    ''',
+      [surfista.surfistaId],
+    );
+
+    List<Onda> ondas = maps.map((map) => Onda.fromMap(map)).toList();
+    surfista.ondas = ondas;
+    return surfista;
   }
 
   Future<int> delete(int surfistaId) async {

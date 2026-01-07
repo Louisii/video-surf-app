@@ -7,7 +7,7 @@ import 'package:video_surf_app/dao/surfista_dao.dart';
 import 'package:video_surf_app/screen/videos_screen.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:video_surf_app/widget/custom_drawer_widget.dart';
-import 'package:video_surf_app/widget/novo_video_dialog.dart';
+import 'package:video_surf_app/widget/dialogs/novo_video_dialog.dart';
 
 class SurfistarScreen extends StatefulWidget {
   const SurfistarScreen({super.key});

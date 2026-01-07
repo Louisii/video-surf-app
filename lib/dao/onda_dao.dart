@@ -76,6 +76,55 @@ class OndaDao {
     return ondas;
   }
 
+ Future<List<Onda>> findBySurfista(int surfistaId) async {
+    final db = await DB.instance.database;
+
+    // 1️⃣ Busca ondas do vídeo
+    final ondasMaps = await db!.query(
+      OndaFields.tableName,
+      where: '${OndaFields.surfistaId} = ?',
+      whereArgs: [surfistaId],
+    );
+
+    // 2️⃣ Mapeia para Onda e busca avaliações de manobra
+    List<Onda> ondas = [];
+    for (var m in ondasMaps) {
+      Onda onda = Onda.fromMap(m);
+
+      // 🔹 Buscar avaliações de manobra desta onda
+      final avaliacoesMaps = await db.query(
+        AvaliacaoManobraFields.tableName, // nome da tabela de avaliações
+        where: 'ondaId = ?',
+        whereArgs: [onda.ondaId],
+      );
+
+      List<AvaliacaoManobra> manobras = [];
+      for (var aMap in avaliacoesMaps) {
+        AvaliacaoManobra manobra = AvaliacaoManobra.fromMap(aMap);
+
+        // Buscar indicadores
+        final indicadoresMaps = await db.query(
+          AvaliacaoIndicadorFields.tableName,
+          where: '${AvaliacaoIndicadorFields.idAvaliacaoManobra} = ?',
+          whereArgs: [manobra.avaliacaoManobraId],
+        );
+
+        manobra.avaliacaoIndicadores = indicadoresMaps
+            .map((iMap) => AvaliacaoIndicador.fromMap(iMap))
+            .toList();
+
+        manobras.add(manobra);
+      }
+
+      onda.manobrasAvaliadas = manobras;
+
+      ondas.add(onda);
+    }
+
+    return ondas;
+  }
+
+
   // 🔹 Buscar onda por ID
   Future<Onda?> getById(int id) async {
     final db = await DB.instance.database;

@@ -11,7 +11,7 @@ class Surfista extends Atleta {
   final int? surfistaId;
   final BaseSurfista base;
   final List<Video> videos;
-  final List<Onda> ondas;
+   List<Onda> ondas;
 
   Surfista({
     this.surfistaId,
@@ -47,6 +47,16 @@ class Surfista extends Atleta {
     // final videoDao = VideoDao(); TODO
     // return await videoDao.countBySurfistaId(surfistaId!);
     return 0;
+  }
+
+  double mediaDesempenhoPercent() {
+    double soma = 0;
+
+    for (Onda o in ondas) {
+      soma += o.mediaDesempenhoPercent();
+    }
+
+    return (soma / ondas.length);
   }
 
   @override

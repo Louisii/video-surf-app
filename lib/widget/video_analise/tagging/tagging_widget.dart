@@ -15,7 +15,7 @@ import 'package:video_surf_app/model/tipo_acao.dart';
 import 'package:video_surf_app/model/video.dart';
 import 'package:video_surf_app/providers/onda_provider.dart';
 import 'package:video_surf_app/providers/ondas_provider.dart';
-import 'package:video_surf_app/widget/classificacao/classificacoes_buttons.dart';
+import 'package:video_surf_app/widget/video_analise/classificacao/classificacoes_buttons.dart';
 import 'package:video_surf_app/widget/video_analise/tagging/lado_onda_widget.dart';
 
 class TaggingWidget extends StatefulWidget {
