@@ -58,7 +58,7 @@ class SurfistaRelatorioScreen extends StatelessWidget {
                           final linhas = await RelatorioSurfistaDto()
                               .getRelatorioSurfista(surfista.surfistaId!);
 
-                          final file = await exportarRelatorioCsv(
+                          final file = await exportarRelatorioCsvCompleto(
                             surfista,
                             linhas,
                           );
@@ -66,10 +66,8 @@ class SurfistaRelatorioScreen extends StatelessWidget {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                showCloseIcon: true,
-                                duration: Duration(minutes: 1),
                                 content: Text(
-                                  'CSV exportado com sucesso\n${file.path}',
+                                  'CSV completo exportado!\n${file.path}',
                                 ),
                               ),
                             );

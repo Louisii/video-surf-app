@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_surf_app/model/avaliacao_indicador.dart';
+import 'package:video_surf_app/model/avaliacao_manobra.dart';
+import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/relatorio_onda.dart';
 import 'package:video_surf_app/model/surfista.dart';
 
-Future<File> exportarRelatorioCsv(
+Future<File> exportarRelatorioCsvCompleto(
   Surfista surfista,
   List<RelatorioOnda> relatorio,
 ) async {
@@ -11,29 +14,37 @@ Future<File> exportarRelatorioCsv(
 
   // Cabeçalho
   buffer.writeln(
-    'Onda;Data;Local;Lado;Terminou Caindo;Total Manobras;Desempenho (%)',
+    'Onda;Data;Local;Lado;Terminou Caindo;'
+    'Manobra;Indicador;Classificacao;Nota;'
+    'Total Manobras Onda;Desempenho Onda (%)',
   );
 
-  // Linhas
   for (int i = 0; i < relatorio.length; i++) {
-    final r = relatorio[i];
+    RelatorioOnda relOnda = relatorio[i];
 
-    buffer.writeln(
-      '${i + 1};'
-      '${_formatDate(r.data)};'
-      '${r.local};'
-      '${r.lado};'
-      '${r.terminouCaindo ? 'Sim' : 'Não'};'
-      '${r.totalManobras};'
-      '${r.desempenhoPercent.toStringAsFixed(0)}',
-    );
+    for (final AvaliacaoManobra manobra in relOnda.manobrasAvaliadas) {
+      for (final AvaliacaoIndicador indicador in manobra.avaliacaoIndicadores) {
+        buffer.writeln(
+          '${i + 1};'
+          '${_formatDate(relOnda.data)};'
+          '${relOnda.local};'
+          '${relOnda.lado};'
+          '${relOnda.terminouCaindo ? 'Sim' : 'Não'};'
+          '${manobra.tipoAcao?.nome ?? "nome ação"};'
+          '${indicador.indicador?.descricao ?? "descrição indicador"};'
+          '${indicador.classificacao.label};'
+          '${indicador.classificacao.valor};'
+          '${relOnda.totalManobras};'
+          '${relOnda.desempenhoPercent.toStringAsFixed(0)}',
+        );
+      }
+    }
   }
 
-  // Diretório
   final directory = await getApplicationDocumentsDirectory();
 
   final fileName =
-      'relatorio_${surfista.nome.replaceAll(' ', '_').toLowerCase()}.csv';
+      'relatorio_completo_${surfista.nome.replaceAll(' ', '_').toLowerCase()}.csv';
 
   final file = File('${directory.path}/$fileName');
 

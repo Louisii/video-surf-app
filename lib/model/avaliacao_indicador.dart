@@ -10,7 +10,7 @@ class AvaliacaoIndicador {
 
   // Relações opcionais
   final AvaliacaoManobra? acao;
-  final Indicador? indicador;
+   Indicador? indicador;
 
   AvaliacaoIndicador({
     this.avaliacaoIndicadorId,

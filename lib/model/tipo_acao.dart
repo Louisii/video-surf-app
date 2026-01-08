@@ -4,7 +4,7 @@ import 'package:video_surf_app/model/indicador.dart';
 class TipoAcao {
   final int? tipoAcaoId;
   final String nome;
-  final String nivel;
+  final String? nivel;
 
   Side side;
 
@@ -14,7 +14,7 @@ class TipoAcao {
   TipoAcao({
     this.tipoAcaoId,
     required this.nome,
-    required this.nivel,
+     this.nivel,
     required this.side,
     this.indicadores,
   });

@@ -1,3 +1,4 @@
+import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/onda.dart';
 
@@ -8,6 +9,7 @@ class RelatorioOnda {
   final String lado;
   final bool terminouCaindo;
   final bool avaliada;
+  List<AvaliacaoManobra> manobrasAvaliadas;
 
   final int totalManobras;
   final int totalIndicadores;
@@ -25,6 +27,7 @@ class RelatorioOnda {
     required this.totalIndicadores,
     required this.mediaIndicadores,
     required this.desempenhoPercent,
+    required this.manobrasAvaliadas,
   });
 
   /// Para CSV
@@ -70,6 +73,7 @@ extension RelatorioOndaMapper on RelatorioOnda {
       totalIndicadores: totalIndicadores,
       mediaIndicadores: mediaIndicadores,
       desempenhoPercent: desempenho.clamp(0, 100),
+      manobrasAvaliadas: onda.manobrasAvaliadas,
     );
   }
 }

@@ -13,7 +13,7 @@ class AvaliacaoManobra {
 
   // Relações opcionais
   final Onda? onda;
-  final TipoAcao? tipoAcao;
+   TipoAcao? tipoAcao;
   List<AvaliacaoIndicador> avaliacaoIndicadores;
 
   AvaliacaoManobra({
