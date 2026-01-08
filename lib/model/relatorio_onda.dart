@@ -57,7 +57,7 @@ extension RelatorioOndaMapper on RelatorioOnda {
               totalIndicadores;
 
     // desempenho em %
-    final desempenho = (mediaIndicadores / 10) * 100;
+    final desempenho = (mediaIndicadores) * 100;
 
     return RelatorioOnda(
       ondaId: onda.ondaId!,

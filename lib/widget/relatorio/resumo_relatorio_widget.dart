@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/relatorio_onda.dart';
 import 'package:video_surf_app/widget/relatorio/resumo_item_widget.dart';
 
@@ -9,14 +10,12 @@ class ResumoRelatorio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalOndas = relatorio.length;
+    int totalOndas = relatorio.length;
 
-    final mediaGeral = totalOndas == 0
+    double mediaGeral = totalOndas == 0
         ? 0
-        : relatorio
-                .map((r) => r.desempenhoPercent)
-                .reduce((a, b) => a + b) /
-            totalOndas;
+        : relatorio.map((r) => r.desempenhoPercent).reduce((a, b) => a + b) /
+              totalOndas;
 
     final melhorOnda = relatorio.reduce(
       (a, b) => a.desempenhoPercent > b.desempenhoPercent ? a : b,
