@@ -5,6 +5,7 @@ import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/widget/custom_appbar_widget.dart';
 import 'package:video_surf_app/widget/relatorio/resumo_relatorio_widget.dart';
 import 'package:video_surf_app/widget/relatorio/tabela_relatorio_widget.dart';
+import 'package:video_surf_app/utils/exportar_relatorio_csv.dart';
 
 class SurfistaRelatorioScreen extends StatelessWidget {
   final Surfista surfista;
@@ -57,13 +58,19 @@ class SurfistaRelatorioScreen extends StatelessWidget {
                           final linhas = await RelatorioSurfistaDto()
                               .getRelatorioSurfista(surfista.surfistaId!);
 
-                          // TODO: usar seu helper de exportação CSV
-                          // await exportarRelatorioCsv(surfista, linhas);
+                          final file = await exportarRelatorioCsv(
+                            surfista,
+                            linhas,
+                          );
 
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('CSV exportado com sucesso'),
+                              SnackBar(
+                                showCloseIcon: true,
+                                duration: Duration(minutes: 1),
+                                content: Text(
+                                  'CSV exportado com sucesso\n${file.path}',
+                                ),
                               ),
                             );
                           }
