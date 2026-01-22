@@ -197,7 +197,7 @@ class _OndaListTileState extends State<OndaListTile> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Card(
-                                    color: Colors.grey.shade700,
+                                    color: Colors.red.shade900,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 4.0,
@@ -436,9 +436,30 @@ class _OndaListTileState extends State<OndaListTile> {
                             );
                           },
                         ),
-                        Text(
-                          "${(indicador.classificacao.valor * 100).toStringAsFixed(0)}%",
-                          style: const TextStyle(color: Colors.tealAccent),
+                        // Text(
+                        //   "${(indicador.classificacao.valor * 100).toStringAsFixed(0)}%",
+                        //   style: const TextStyle(color: Colors.tealAccent),
+                        // ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: indicador.classificacao.backgroundColor,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: indicador.classificacao.backgroundColor,
+                              width: 2,
+                            ),
+                          ),
+                          width: 40,
+                          height: 24,
+                          child: Center(
+                            child: Text(
+                              indicador.classificacao.sigla,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

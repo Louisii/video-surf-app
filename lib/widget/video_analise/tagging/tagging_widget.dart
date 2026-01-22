@@ -554,7 +554,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
                       clear();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade700,
+                      backgroundColor: Colors.red.shade900,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
