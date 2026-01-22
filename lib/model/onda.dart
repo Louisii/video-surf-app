@@ -14,7 +14,7 @@ class Onda {
   final LadoOnda ladoOnda;
   bool terminouCaindo;
   bool avaliacaoConcluida;
-
+  String? surfistaNome;
   // Relações opcionais
   final Surfista? surfista;
   Local? local;

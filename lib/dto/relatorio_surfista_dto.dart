@@ -1,4 +1,5 @@
 import 'package:video_surf_app/dao/db.dart';
+import 'package:video_surf_app/model/atleta.dart';
 import 'package:video_surf_app/model/avaliacao_indicador.dart';
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
@@ -6,22 +7,34 @@ import 'package:video_surf_app/model/indicador.dart';
 import 'package:video_surf_app/model/local.dart';
 import 'package:video_surf_app/model/onda.dart';
 import 'package:video_surf_app/model/relatorio_onda.dart';
+import 'package:video_surf_app/model/surfista.dart';
 import 'package:video_surf_app/model/tipo_acao.dart';
 
 class RelatorioSurfistaDto {
   Future<List<RelatorioOnda>> getRelatorioSurfista(int surfistaId) async {
     final db = await DB.instance.database;
 
-    final ondasMaps = await db!.query(
-      OndaFields.tableName,
-      where: '${OndaFields.surfistaId} = ?',
-      whereArgs: [surfistaId],
+    final ondasMaps = await db!.rawQuery(
+      '''
+  SELECT o.*,
+         a.${AtletaFields.nome} AS surfistaNome
+  FROM ${OndaFields.tableName} o
+  JOIN ${SurfistaFields.tableName} s
+    ON s.${SurfistaFields.surfistaId} = o.${OndaFields.surfistaId}
+  JOIN ${AtletaFields.tableName} a
+    ON a.${AtletaFields.atletaId} = s.${AtletaFields.atletaId}
+  WHERE o.${OndaFields.surfistaId} = ?
+  ''',
+      [surfistaId],
     );
 
     List<RelatorioOnda> relatorio = [];
 
     for (var m in ondasMaps) {
       final onda = Onda.fromMap(m);
+      
+
+  onda.surfistaNome = m['surfistaNome'] as String;
 
       // 🔹 Local
       final localMaps = await db.query(

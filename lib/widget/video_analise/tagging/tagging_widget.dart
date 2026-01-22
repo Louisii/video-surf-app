@@ -603,7 +603,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
       surfistaId: widget.surfista.surfistaId!,
       localId: widget.video.localId,
       videoId: widget.video.videoId!,
-      data: DateTime.now(),
+      data: widget.video.data,
       ladoOnda: ladoOnda!,
       terminouCaindo: terminouCaindo,
       avaliacaoConcluida: avaliacaoConcluida,

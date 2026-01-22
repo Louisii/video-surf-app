@@ -14,6 +14,7 @@ Future<File> exportarRelatorioCsvCompleto(
 
   // Cabeçalho
   buffer.writeln(
+    'Surfista;'
     'Onda;Data;Local;Lado;Terminou Caindo;'
     'Manobra;Indicador;Classificacao;Nota;'
     'Total Manobras Onda;Desempenho Onda (%)',
@@ -25,6 +26,7 @@ Future<File> exportarRelatorioCsvCompleto(
     for (final AvaliacaoManobra manobra in relOnda.manobrasAvaliadas) {
       for (final AvaliacaoIndicador indicador in manobra.avaliacaoIndicadores) {
         buffer.writeln(
+          '${surfista.nome};'
           '${i + 1};'
           '${_formatDate(relOnda.data)};'
           '${relOnda.local};'

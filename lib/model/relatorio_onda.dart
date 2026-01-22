@@ -1,8 +1,10 @@
 import 'package:video_surf_app/model/avaliacao_manobra.dart';
 import 'package:video_surf_app/model/enum/classificacao.dart';
 import 'package:video_surf_app/model/onda.dart';
+import 'package:video_surf_app/model/surfista.dart';
 
 class RelatorioOnda {
+  Surfista? surfista;
   final int ondaId;
   final DateTime data;
   final String local;
@@ -15,8 +17,10 @@ class RelatorioOnda {
   final int totalIndicadores;
   final double mediaIndicadores;
   final double desempenhoPercent;
+  final String surfistaNome;
 
   RelatorioOnda({
+    required this.surfistaNome,
     required this.ondaId,
     required this.data,
     required this.local,
@@ -31,18 +35,18 @@ class RelatorioOnda {
   });
 
   /// Para CSV
-  List<String> toCsvRow() {
-    return [
-      data.toIso8601String(),
-      local,
-      lado,
-      terminouCaindo ? 'Sim' : 'Não',
-      avaliada ? 'Sim' : 'Não',
-      totalManobras.toString(),
-      mediaIndicadores.toStringAsFixed(2),
-      '${desempenhoPercent.toStringAsFixed(0)}%',
-    ];
-  }
+  // List<String> toCsvRow() {
+  //   return [
+  //     data.toIso8601String(),
+  //     local,
+  //     lado,
+  //     terminouCaindo ? 'Sim' : 'Não',
+  //     avaliada ? 'Sim' : 'Não',
+  //     totalManobras.toString(),
+  //     mediaIndicadores.toStringAsFixed(2),
+  //     '${desempenhoPercent.toStringAsFixed(0)}%',
+  //   ];
+  // }
 }
 
 extension RelatorioOndaMapper on RelatorioOnda {
@@ -63,6 +67,7 @@ extension RelatorioOndaMapper on RelatorioOnda {
     final desempenho = (mediaIndicadores) * 100;
 
     return RelatorioOnda(
+      surfistaNome: onda.surfistaNome ?? '',
       ondaId: onda.ondaId!,
       data: onda.data,
       local: onda.local?.toString() ?? '-',
